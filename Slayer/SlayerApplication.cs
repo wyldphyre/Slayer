@@ -21,60 +21,51 @@ namespace Slayer
     private Process[] ProcessesArray = null;
     private bool alwaysPreview = false;
 
-    public string ProcessName
-    {
-        get { return processName; }
-        set { processName = value; }
-    }
-
-    public List<string> Arguments
-    {
-        get { return arguments; }
-    }
+    public string ProcessName { get; set; }
+    public List<string> Arguments { get { return arguments; } }
 
     public void Execute()
     {
       var Application = new Application();
 
+      var JumpList = new JumpList();
       var SlayableSection = (SlayableConfigurationSection)ConfigurationManager.GetSection("slayableSection");
-
-      var List = new JumpList();
-
+      
       if (SlayableSection != null)
       {
-        string ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+        var ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
 
         foreach (SlayableApplicationElement Element in SlayableSection.Applications)
         {
           var Task = new JumpTask();
+          JumpList.JumpItems.Add(Task);
           Task.CustomCategory = "Slay";
           Task.ApplicationPath = ApplicationFilePath;
           Task.Title = Element.Name;
           Task.Arguments = Element.ProcessName;
           if (Element.Preview)
             Task.Arguments += @" \AlwaysPreview";
-          List.JumpItems.Add(Task);
         }
       }
 
       // The entire JumpList is replaced each time
-      JumpList.SetJumpList(Application, List);
+      JumpList.SetJumpList(Application, JumpList);
           
       foreach (string argument in Arguments)
       {
         if (argument.StartsWith("-") || argument.StartsWith("\\"))
         {
           // arguments with a switch indicator character at the front are assumed to be switches
-          string switchArgument = argument.Remove(0, 1);
+          var switchArgument = argument.Remove(0, 1);
 
           if (switchArgument.ToUpper() == "AlwaysPreview".ToUpper())
           {
-              alwaysPreview = true;
+            alwaysPreview = true;
           }
           else
           {
-              MessageBox.Show(String.Format("The switch parameter \"{0}\" is not recognised.", switchArgument));
-              return; // do not continue running the application if there is something wrong with the parameters
+            MessageBox.Show(String.Format("The switch parameter \"{0}\" is not recognised.", switchArgument));
+            return; // do not continue running the application if there is something wrong with the parameters
           }
         }
         else
@@ -90,10 +81,8 @@ namespace Slayer
       string sanitisedProcessName = ProcessName;
 
       if (sanitisedProcessName.EndsWith(".exe"))
-      {
         sanitisedProcessName = sanitisedProcessName.Remove(sanitisedProcessName.Length - ".exe".Length);
-      }
-
+      
       // To Do: How to handle the user passing in a path instead of 'friendly' process name?
 
       ProcessesArray = Process.GetProcessesByName(sanitisedProcessName);
@@ -102,18 +91,16 @@ namespace Slayer
       {
         if ((ProcessesArray.Length == 1) && !alwaysPreview)
         {
-            //kill the process
-            ProcessesArray[0].Kill();
+          //kill the process
+          ProcessesArray[0].Kill();
         }
         else
         {
           List<Process> ProcessList = new List<Process>();
 
           foreach (Process process in ProcessesArray)
-          {
             ProcessList.Add(process);
-          }
-
+          
           var MainWindow = new Window();
           MainWindow.FontFamily = new FontFamily("Calibri");
           MainWindow.FontSize = 13;
