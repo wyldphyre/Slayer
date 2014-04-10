@@ -44,7 +44,7 @@ namespace Slayer
           Task.Title = Element.Name;
           Task.Arguments = Element.ProcessName;
           if (Element.Preview)
-            Task.Arguments += @" \AlwaysPreview";
+            Task.Arguments += @" /AlwaysPreview";
         }
       }
 
@@ -53,7 +53,7 @@ namespace Slayer
           
       foreach (string argument in Arguments)
       {
-        if (argument.StartsWith("-") || argument.StartsWith("\\"))
+        if (argument.StartsWith("-") || argument.StartsWith("/"))
         {
           // arguments with a switch indicator character at the front are assumed to be switches
           var switchArgument = argument.Remove(0, 1);
