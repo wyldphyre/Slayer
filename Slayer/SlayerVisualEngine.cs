@@ -15,33 +15,32 @@ namespace Slayer
 {
   class SlayerVisualEngine
   {
+    private const double MinimumButtonWidth = 70;
+    private Window Window;
+    private Border MainBorder { get; set; }
+
     public Application Application { get; set; }
-    public Border MainBorder { get; set; }
     public List<Process> ProcessList { get; set; }
 
-    private const double MinimumButtonWidth = 70;
-
-    private int SortByStartTime(Process Process1, Process Process2)
+    public SlayerVisualEngine(Window Window)
     {
-      if (Process1 == null)
-      {
-        if (Process2 == null)
-          return 0;
-        else
-          return -1;
-      }
-      else
-      {
-        if (Process2 == null) // ...and process2 is null, process1 is greater.
-          return 1;
-        else
-          return Process1.StartTime.CompareTo(Process2.StartTime);
-      }
-    }
+      this.Window = Window;
 
-    public void Install()
-    {
-      ProcessList.Sort(SortByStartTime);
+      Window.FontFamily = new FontFamily("Calibri");
+      Window.FontSize = 13;
+      Window.Width = 400;
+      Window.Height = 470;
+      Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+      Window.Background = Brushes.White;
+      Window.KeyUp += (object sender, System.Windows.Input.KeyEventArgs Event) =>
+      {
+        if (Event.Key == Key.Escape)
+          Window.Close();
+      };
+
+      MainBorder = new Border();
+      Window.Content = MainBorder;
+      MainBorder.Margin = new Thickness(4);
 
       MainBorder.BorderBrush = Brushes.LightGray;
       MainBorder.BorderThickness = new Thickness(1, 1, 2, 2);
@@ -51,6 +50,13 @@ namespace Slayer
 
       var BackgroundGradientBrush = new LinearGradientBrush(Colors.Snow, Colors.Wheat, 45);
       MainBorder.Background = BackgroundGradientBrush;
+    }
+
+    public void Install()
+    {
+      ProcessList.Sort(SortByStartTime);
+
+      Window.Title = String.Format("Processes ({0})", ProcessList.Count);
       
       var MainGrid = new Grid();
       MainBorder.Child = MainGrid;
@@ -127,14 +133,30 @@ namespace Slayer
         foreach (Process Process in ProcessList)
         {
           if (Process.StartTime > YoungestProcess.StartTime)
-          {
             YoungestProcess = Process;
-          }
         }
 
         YoungestProcess.Kill();
         Application.Shutdown();
       };
+    }
+
+    private int SortByStartTime(Process Process1, Process Process2)
+    {
+      if (Process1 == null)
+      {
+        if (Process2 == null)
+          return 0;
+        else
+          return -1;
+      }
+      else
+      {
+        if (Process2 == null) // ...and process2 is null, process1 is greater.
+          return 1;
+        else
+          return Process1.StartTime.CompareTo(Process2.StartTime);
+      }
     }
   }
 }

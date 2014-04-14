@@ -17,7 +17,6 @@ namespace Slayer
   class SlayerApplication
   {
     private List<string> arguments = new List<string>();
-    private string processName = null;
     private Process[] ProcessesArray = null;
     private bool alwaysPreview = false;
 
@@ -26,7 +25,7 @@ namespace Slayer
 
     public void Execute()
     {
-      var Application = new Application();
+      var Application = new Application();    
 
       var JumpList = new JumpList();
       var SlayableSection = (SlayableConfigurationSection)ConfigurationManager.GetSection("slayableSection");
@@ -53,6 +52,11 @@ namespace Slayer
           
       foreach (string argument in Arguments)
       {
+        if (argument.StartsWith(@"\"))
+        {
+          MessageBox.Show(string.Format("Incorrect switch {0}. Use '-' or '/' instead of '\\'.", argument));
+          return;
+        }
         if (argument.StartsWith("-") || argument.StartsWith("/"))
         {
           // arguments with a switch indicator character at the front are assumed to be switches
@@ -72,7 +76,7 @@ namespace Slayer
         {
           // arguments without switch indicator are assumed to be process names.
           // TO DO: Currently only the last process name listed will be used.
-          processName = argument;
+          ProcessName = argument;
         }
       }
 
@@ -83,7 +87,7 @@ namespace Slayer
       if (sanitisedProcessName.EndsWith(".exe"))
         sanitisedProcessName = sanitisedProcessName.Remove(sanitisedProcessName.Length - ".exe".Length);
       
-      // To Do: How to handle the user passing in a path instead of 'friendly' process name?
+      // TODO: Should the app also handle the user passing in a path instead of 'friendly' process name?
 
       ProcessesArray = Process.GetProcessesByName(sanitisedProcessName);
 
@@ -100,40 +104,24 @@ namespace Slayer
 
           foreach (Process process in ProcessesArray)
             ProcessList.Add(process);
+
+          Application.ShutdownMode = ShutdownMode.OnMainWindowClose;
+          Application.DispatcherUnhandledException += (Sender, Event) =>
+          {
+            MessageBox.Show(Event.Exception.Message, "Exception");
+            Event.Handled = true;
+          };
           
           var MainWindow = new Window();
-          MainWindow.FontFamily = new FontFamily("Calibri");
-          MainWindow.FontSize = 13;
-          MainWindow.Width = 400;
-          MainWindow.Height = 470;
-          MainWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-          MainWindow.Title = String.Format("Processes ({0})", ProcessList.Count);
-          MainWindow.Background = Brushes.White;
-          MainWindow.KeyUp += (object sender, System.Windows.Input.KeyEventArgs Event) =>
-          {
-            if (Event.Key == Key.Escape)
-              MainWindow.Close();
-          };
-
-          var MainBorder = new Border();
-          MainWindow.Content = MainBorder;
-          MainBorder.Margin = new Thickness(4);
-
-          var VisualEngine = new SlayerVisualEngine();
-          VisualEngine.MainBorder = MainBorder;
+          Application.MainWindow = MainWindow;
+          
+          var VisualEngine = new SlayerVisualEngine(MainWindow);
           VisualEngine.ProcessList = ProcessList;
           VisualEngine.Application = Application;
           VisualEngine.Install();
 
           MainWindow.Show();
 
-          Application.DispatcherUnhandledException += (Sender, Event) =>
-          {
-            MessageBox.Show(Event.Exception.Message, "Exception");
-            Event.Handled = true;
-          };
-          Application.MainWindow = MainWindow;
-          Application.ShutdownMode = ShutdownMode.OnMainWindowClose;
           Application.Run();
         }   
       }
