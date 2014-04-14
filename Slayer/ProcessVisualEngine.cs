@@ -34,10 +34,10 @@ namespace Slayer
       MainBorder.Child = ProcessesScrollViewer;
       ProcessesScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-      BuildProcessDisplay(ProcessesScrollViewer);
+      Compose(ProcessesScrollViewer);
     }
 
-    private void BuildProcessDisplay(ScrollViewer Parent)
+    private void Compose(ScrollViewer Parent)
     {
       var ProcessesStackPanel = new StackPanel();
       Parent.Content = ProcessesStackPanel;
@@ -88,9 +88,7 @@ namespace Slayer
             Process ButtonProcess = null;
 
             if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
-            {
               SetForegroundWindow(ButtonProcess.MainWindowHandle);
-            }
           };
 
         var KillMeButton = new Button();
@@ -110,13 +108,11 @@ namespace Slayer
             {
               ButtonProcess.Kill();
               ProcessList.Remove(ButtonProcess);
-              BuildProcessDisplay(Parent);
+              Compose(Parent);
             }
 
             if (ProcessList.Count < 1)
-            {
               Application.Shutdown();
-            }
           };
 
         var KillOthersButton = new Button();
@@ -144,11 +140,9 @@ namespace Slayer
               };
 
               foreach (Process KilledProcess in KilledProcesses)
-              {
                 ProcessList.Remove(KilledProcess);
-              }
-
-              BuildProcessDisplay(Parent);
+        
+              Compose(Parent);
             }
         };
       }
@@ -159,47 +153,37 @@ namespace Slayer
       StringBuilder Result = new StringBuilder("");
       
       if (TimeSpan.Days > 0)
-      {
         Result.AppendFormat("{0} days", TimeSpan.Days);
-      }
-
+      
       if (TimeSpan.Hours > 0)
       {
         if (Result.Length != 0)
-        {
           Result.Append(", ");
-        }
-
+      
         Result.AppendFormat("{0} hours", TimeSpan.Hours);
       }
 
       if (TimeSpan.Minutes > 0)
       {
         if (Result.Length != 0)
-        {
           Result.Append(", ");
-        }
-
+      
         Result.AppendFormat("{0} minutes", TimeSpan.Minutes);
       }
 
       if (TimeSpan.Seconds > 0)
       {
         if (Result.Length != 0)
-        {
           Result.Append(", ");
-        }
-
+      
         Result.AppendFormat("{0} seconds", TimeSpan.Seconds);
       }
 
       if (TimeSpan.Milliseconds > 0)
       {
         if (Result.Length != 0)
-        {
           Result.Append(", ");
-        }
-
+      
         Result.AppendFormat("{0} milliseconds", TimeSpan.Milliseconds);
       }
 

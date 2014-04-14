@@ -90,11 +90,7 @@ namespace Slayer
       KillAllButton.MinWidth = MinimumButtonWidth;
       KillAllButton.Click += (object sender, RoutedEventArgs e) =>
       {
-        foreach (Process Process in ProcessList)
-        {
-          Process.Kill();
-        }
-
+        ProcessList.ForEach(Process => Process.Kill());
         Application.Shutdown();
       };
 
@@ -106,14 +102,12 @@ namespace Slayer
       KillOldestButton.MinWidth = MinimumButtonWidth;
       KillOldestButton.Click += (object sender, RoutedEventArgs e) =>
         {
-          Process OldestProcess = ProcessList.First();
+          var OldestProcess = ProcessList.First();
 
           foreach (Process Process in ProcessList)
           {
             if (Process.StartTime < OldestProcess.StartTime)
-            {
               OldestProcess = Process;
-            }
           }
 
           OldestProcess.Kill();
@@ -128,7 +122,7 @@ namespace Slayer
       KillYoungestButton.MinWidth = MinimumButtonWidth;
       KillYoungestButton.Click += (object sender, RoutedEventArgs e) =>
       {
-        Process YoungestProcess = ProcessList.First();
+        var YoungestProcess = ProcessList.First();
 
         foreach (Process Process in ProcessList)
         {
