@@ -24,7 +24,7 @@ namespace Slayer
     [DllImport("user32.dll")]
     static extern bool SetForegroundWindow(IntPtr hWnd);
 
-    private const double MinimumButtonWidth = 65;
+    private const double MinimumButtonWidth = 75;
     private Brush ProcessButtonBorderBrush = Brushes.LightGray;
     private Brush ProcessButtonBackground = Brushes.WhiteSmoke;
 
@@ -49,20 +49,14 @@ namespace Slayer
         var ProcessBorder = new Border();
         ProcessesStackPanel.Children.Add(ProcessBorder);
         ProcessBorder.BorderThickness = new Thickness(1, 1, 2, 2);
-        ProcessBorder.BorderBrush = Brushes.LightGray;
-        ProcessBorder.Background = Brushes.Snow;
-        ProcessBorder.CornerRadius = new CornerRadius(10, 10, 10, 10);
-        System.Windows.Media.Effects.DropShadowEffect DropShadowEffect = new System.Windows.Media.Effects.DropShadowEffect();
-        DropShadowEffect.Color = Colors.DarkGray;
-        ProcessBorder.Effect = DropShadowEffect;
+        ProcessBorder.Background = Brushes.AliceBlue;
         ProcessBorder.Margin = new Thickness(4, 8, 8, 8);
         ProcessBorder.Padding = new Thickness(2);
 
         var ProcessStackPanel = new StackPanel();
         ProcessBorder.Child = ProcessStackPanel;
 
-        ProduceDataRow(ProcessStackPanel, "Name:", process.ProcessName);
-        ProduceDataRow(ProcessStackPanel, "ID:", process.Id.ToString());
+        ProduceDataRow(ProcessStackPanel, "Name:", string.Format("{0} [{1}]", process.ProcessName, process.Id));
         ProduceDataRow(ProcessStackPanel, "Main Window Title:", process.MainWindowTitle);
         ProduceDataRow(ProcessStackPanel, "Physical Memory:", string.Format("{0} MB", process.WorkingSet64 / (1024 * 1024)));
         ProduceDataRow(ProcessStackPanel, "Total Processor Time:", TimeSpanAsWords(process.TotalProcessorTime));
@@ -74,80 +68,81 @@ namespace Slayer
         ButtonStackPanel.FlowDirection = FlowDirection.RightToLeft;
         ButtonStackPanel.Margin = new Thickness(5);
 
-        var ShowMeButton = new Button();
+        var ShowMeButton = NewButton("Show Me");
         ButtonStackPanel.Children.Add(ShowMeButton);
         buttonProcessDictionary.Add(ShowMeButton, process);
-        ShowMeButton.Content = "Show Me";
-        ShowMeButton.Background = ProcessButtonBackground;
-        ShowMeButton.Margin = new Thickness(0, 0, 2, 0);
-        ShowMeButton.BorderBrush = ProcessButtonBorderBrush;
-        ShowMeButton.Width = MinimumButtonWidth;
         ShowMeButton.Click += (Sender, Event) =>
-          {
-            Button ClickedButton = (Button)Sender;
-            Process ButtonProcess = null;
+        {
+          Button ClickedButton = (Button)Sender;
+          Process ButtonProcess = null;
 
-            if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
-              SetForegroundWindow(ButtonProcess.MainWindowHandle);
-          };
+          if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
+            SetForegroundWindow(ButtonProcess.MainWindowHandle);
+        };
 
-        var KillMeButton = new Button();
+        var KillMeButton = NewButton("Kill Me");
         ButtonStackPanel.Children.Add(KillMeButton);
         buttonProcessDictionary.Add(KillMeButton, process);
-        KillMeButton.Content = "Kill Me";
-        KillMeButton.Background = ProcessButtonBackground;
-        KillMeButton.Margin = new Thickness(0, 0, 2, 0);
-        KillMeButton.BorderBrush = ProcessButtonBorderBrush;
-        KillMeButton.Width = MinimumButtonWidth;
         KillMeButton.Click += (Sender, Event) =>
+        {
+          Button ClickedButton = (Button)Sender;
+          Process ButtonProcess = null;
+
+          if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
           {
-            Button ClickedButton = (Button)Sender;
-            Process ButtonProcess = null;
+            ButtonProcess.Kill();
+            ProcessList.Remove(ButtonProcess);
+            Compose(Parent);
+          }
 
-            if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
-            {
-              ButtonProcess.Kill();
-              ProcessList.Remove(ButtonProcess);
-              Compose(Parent);
-            }
+          if (ProcessList.Count < 1)
+            Application.Shutdown();
+        };
 
-            if (ProcessList.Count < 1)
-              Application.Shutdown();
-          };
-
-        var KillOthersButton = new Button();
+        var KillOthersButton = NewButton("Kill Others");
         ButtonStackPanel.Children.Add(KillOthersButton);
         buttonProcessDictionary.Add(KillOthersButton, process);
-        KillOthersButton.Content = "Kill Others";
-        KillOthersButton.Background = ProcessButtonBackground;
-        KillOthersButton.BorderBrush = ProcessButtonBorderBrush;
-        KillOthersButton.Width = MinimumButtonWidth;
         KillOthersButton.Click += (Sender, Event) =>
+        {
+          //kill all processes except the one associated with the sending button
+
+          Button ClickedButton = (Button)Sender;
+          Process ButtonProcess = null;
+          List<Process> KilledProcesses = new List<Process>();
+
+          if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
           {
-            //kill all processes except the one associated with the sending button
-
-            Button ClickedButton = (Button)Sender;
-            Process ButtonProcess = null;
-            List<Process> KilledProcesses = new List<Process>();
-
-            if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
+            var KillableProcesses = ProcessList.Where(searchprocess => searchprocess != ButtonProcess);
+            foreach (Process killableProcess in KillableProcesses)
             {
-              var KillableProcesses = ProcessList.Where(searchprocess => searchprocess != ButtonProcess);
-              foreach (Process killableProcess in KillableProcesses)
-              {
-                killableProcess.Kill();
-                KilledProcesses.Add(killableProcess);
-              };
+              killableProcess.Kill();
+              KilledProcesses.Add(killableProcess);
+            };
 
-              foreach (Process KilledProcess in KilledProcesses)
-                ProcessList.Remove(KilledProcess);
+            foreach (Process KilledProcess in KilledProcesses)
+              ProcessList.Remove(KilledProcess);
         
-              Compose(Parent);
-            }
+            Compose(Parent);
+          }
         };
       }
     }
 
+    private Button NewButton(string Caption)
+    {
+      var Result = new Button();
+      Result.Content = Caption;
+      Result.Background = ProcessButtonBackground;
+      Result.BorderBrush = ProcessButtonBorderBrush;
+      Result.Margin = new Thickness(0, 0, 7, 0);
+      Result.Padding = new Thickness(5);
+      Result.Background = Brushes.RoyalBlue;
+      Result.Foreground = Brushes.White;
+      Result.FontSize = 15;
+      Result.MinWidth = MinimumButtonWidth;
+
+      return Result;
+    }
     private string TimeSpanAsWords(TimeSpan TimeSpan)
     {
       StringBuilder Result = new StringBuilder("");

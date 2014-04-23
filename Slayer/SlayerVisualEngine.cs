@@ -40,16 +40,8 @@ namespace Slayer
 
       MainBorder = new Border();
       Window.Content = MainBorder;
-      MainBorder.Margin = new Thickness(4);
-
-      MainBorder.BorderBrush = Brushes.LightGray;
-      MainBorder.BorderThickness = new Thickness(1, 1, 2, 2);
       MainBorder.Padding = new Thickness(4);
-      MainBorder.CornerRadius = new CornerRadius(10);
-      MainBorder.Background = Brushes.LightGray;
-
-      var BackgroundGradientBrush = new LinearGradientBrush(Colors.Snow, Colors.Wheat, 45);
-      MainBorder.Background = BackgroundGradientBrush;
+      MainBorder.Background = Brushes.LightSteelBlue;
     }
 
     public void Install()
@@ -82,44 +74,32 @@ namespace Slayer
       ButtonStackPanel.Height = 30;
       ButtonStackPanel.VerticalAlignment = VerticalAlignment.Bottom;
       
-      var KillAllButton = new Button();
+      var KillAllButton = NewButton("Kill All");
       ButtonStackPanel.Children.Add(KillAllButton);
-      KillAllButton.Content = "Kill All";
-      KillAllButton.VerticalAlignment = VerticalAlignment.Bottom;
-      KillAllButton.Margin = new Thickness(0, 0, 5, 0);
-      KillAllButton.MinWidth = MinimumButtonWidth;
       KillAllButton.Click += (object sender, RoutedEventArgs e) =>
       {
         ProcessList.ForEach(Process => Process.Kill());
         Application.Shutdown();
       };
 
-      var KillOldestButton = new Button();
+      var KillOldestButton = NewButton("Kill Oldest");
       ButtonStackPanel.Children.Add(KillOldestButton);
-      KillOldestButton.Content = "Kill Oldest";
-      KillOldestButton.VerticalAlignment = VerticalAlignment.Bottom;
-      KillOldestButton.Margin = new Thickness(0, 0, 5, 0);
-      KillOldestButton.MinWidth = MinimumButtonWidth;
       KillOldestButton.Click += (object sender, RoutedEventArgs e) =>
+      {
+        var OldestProcess = ProcessList.First();
+
+        foreach (Process Process in ProcessList)
         {
-          var OldestProcess = ProcessList.First();
+          if (Process.StartTime < OldestProcess.StartTime)
+            OldestProcess = Process;
+        }
 
-          foreach (Process Process in ProcessList)
-          {
-            if (Process.StartTime < OldestProcess.StartTime)
-              OldestProcess = Process;
-          }
+        OldestProcess.Kill();
+        Application.Shutdown();
+      };
 
-          OldestProcess.Kill();
-          Application.Shutdown();
-        };
-
-      var KillYoungestButton = new Button();
+      var KillYoungestButton = NewButton("Kill Youngest");
       ButtonStackPanel.Children.Add(KillYoungestButton);
-      KillYoungestButton.Content = "Kill Youngest";
-      KillYoungestButton.VerticalAlignment = VerticalAlignment.Bottom;
-      KillYoungestButton.Margin = new Thickness(0, 0, 5, 0);
-      KillYoungestButton.MinWidth = MinimumButtonWidth;
       KillYoungestButton.Click += (object sender, RoutedEventArgs e) =>
       {
         var YoungestProcess = ProcessList.First();
@@ -135,6 +115,20 @@ namespace Slayer
       };
     }
 
+    private Button NewButton(string Caption)
+    {
+      var Result = new Button();
+      Result.Content = Caption;
+      Result.VerticalAlignment = VerticalAlignment.Bottom;
+      Result.Margin = new Thickness(0, 0, 7, 0);
+      Result.Padding = new Thickness(5);
+      Result.Background = Brushes.DarkBlue;
+      Result.Foreground = Brushes.White;
+      Result.FontSize = 15;
+      Result.MinWidth = MinimumButtonWidth;
+
+      return Result;
+    }
     private int SortByStartTime(Process Process1, Process Process2)
     {
       if (Process1 == null)
