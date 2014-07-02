@@ -25,8 +25,11 @@ namespace Slayer
     static extern bool SetForegroundWindow(IntPtr hWnd);
 
     private const double MinimumButtonWidth = 75;
-    private Brush ProcessButtonBorderBrush = Brushes.LightGray;
-    private Brush ProcessButtonBackground = Brushes.WhiteSmoke;
+    private Brush ProcessBorderBackground = Brushes.WhiteSmoke;
+    private Brush ProcessBorderBorderBrush = Brushes.DarkGray;
+    private Brush ProcessButtonBorderBrush = Brushes.Transparent;
+    private Brush ProcessButtonBackground = Brushes.Transparent;
+    private Brush ProcessButtonForeground = Brushes.OrangeRed;
 
     public void Install()
     {
@@ -49,22 +52,25 @@ namespace Slayer
         var ProcessBorder = new Border();
         ProcessesStackPanel.Children.Add(ProcessBorder);
         ProcessBorder.BorderThickness = new Thickness(1, 1, 2, 2);
-        ProcessBorder.Background = Brushes.AliceBlue;
+        ProcessBorder.Background = ProcessBorderBackground;
+        ProcessBorder.BorderBrush = ProcessBorderBorderBrush;
         ProcessBorder.Margin = new Thickness(4, 8, 8, 8);
         ProcessBorder.Padding = new Thickness(2);
+        ProcessBorder.CornerRadius = new CornerRadius(5);
 
         var ProcessStackPanel = new StackPanel();
         ProcessBorder.Child = ProcessStackPanel;
 
-        ProduceDataRow(ProcessStackPanel, "Name:", string.Format("{0} [{1}]", process.ProcessName, process.Id));
-        ProduceDataRow(ProcessStackPanel, "Main Window Title:", process.MainWindowTitle);
-        ProduceDataRow(ProcessStackPanel, "Physical Memory:", string.Format("{0} MB", process.WorkingSet64 / (1024 * 1024)));
-        ProduceDataRow(ProcessStackPanel, "Total Processor Time:", TimeSpanAsWords(process.TotalProcessorTime));
+        ProduceHeader(ProcessStackPanel, process.ProcessName);
+        ProduceDataRow(ProcessStackPanel, "Main Window Title", process.MainWindowTitle);
+        ProduceDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", process.WorkingSet64 / (1024 * 1024)), process.Id.ToString() });
+        ProduceDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(process.TotalProcessorTime));
 
         // Buttons for the process
         var ButtonStackPanel = new StackPanel();
         ProcessStackPanel.Children.Add(ButtonStackPanel);
         ButtonStackPanel.Orientation = Orientation.Horizontal;
+        ButtonStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
         ButtonStackPanel.FlowDirection = FlowDirection.RightToLeft;
         ButtonStackPanel.Margin = new Thickness(5);
 
@@ -121,7 +127,7 @@ namespace Slayer
 
             foreach (Process KilledProcess in KilledProcesses)
               ProcessList.Remove(KilledProcess);
-        
+
             Compose(Parent);
           }
         };
@@ -136,8 +142,7 @@ namespace Slayer
       Result.BorderBrush = ProcessButtonBorderBrush;
       Result.Margin = new Thickness(0, 0, 7, 0);
       Result.Padding = new Thickness(5);
-      Result.Background = Brushes.RoyalBlue;
-      Result.Foreground = Brushes.White;
+      Result.Foreground = ProcessButtonForeground;
       Result.FontSize = 15;
       Result.MinWidth = MinimumButtonWidth;
 
@@ -146,15 +151,15 @@ namespace Slayer
     private string TimeSpanAsWords(TimeSpan TimeSpan)
     {
       StringBuilder Result = new StringBuilder("");
-      
+
       if (TimeSpan.Days > 0)
         Result.AppendFormat("{0} days", TimeSpan.Days);
-      
+
       if (TimeSpan.Hours > 0)
       {
         if (Result.Length != 0)
           Result.Append(", ");
-      
+
         Result.AppendFormat("{0} hours", TimeSpan.Hours);
       }
 
@@ -162,7 +167,7 @@ namespace Slayer
       {
         if (Result.Length != 0)
           Result.Append(", ");
-      
+
         Result.AppendFormat("{0} minutes", TimeSpan.Minutes);
       }
 
@@ -170,7 +175,7 @@ namespace Slayer
       {
         if (Result.Length != 0)
           Result.Append(", ");
-      
+
         Result.AppendFormat("{0} seconds", TimeSpan.Seconds);
       }
 
@@ -178,38 +183,59 @@ namespace Slayer
       {
         if (Result.Length != 0)
           Result.Append(", ");
-      
+
         Result.AppendFormat("{0} milliseconds", TimeSpan.Milliseconds);
       }
 
       return Result.ToString();
     }
-
-    private void ProduceDataRow(StackPanel ParentStackPanel, string Caption, string Data)
+    private void ProduceHeader(StackPanel Parent, string Heading)
     {
-      var DataStackPanel = new StackPanel();
-      ParentStackPanel.Children.Add(DataStackPanel);
-      DataStackPanel.Orientation = Orientation.Horizontal;
+      var HeadingLabel = new Label();
+      Parent.Children.Add(HeadingLabel);
+      HeadingLabel.Content = Heading;
+      HeadingLabel.FontWeight = FontWeights.Bold;
+      HeadingLabel.FontSize = 18;
+      HeadingLabel.HorizontalAlignment = HorizontalAlignment.Center;
+    }
+    private void ProduceDataRow(StackPanel Parent, string Caption, string Data)
+    {
+      ProduceDataRow(Parent, new string[] { Caption}, new string[] { Data });
+    }
+    private void ProduceDataRow(StackPanel Parent, string[] Caption, string[] Data)
+    {
+      Debug.Assert(Caption.Length == Data.Length, "Caption array and Data array must have the same length");
 
-      var CaptionLabel = new Label();
-      DataStackPanel.Children.Add(CaptionLabel);
-      CaptionLabel.Content = Caption;
-      CaptionLabel.FontWeight = FontWeights.Heavy;
+      var RowStackPanel = new StackPanel();
+      Parent.Children.Add(RowStackPanel);
+      RowStackPanel.Orientation = Orientation.Horizontal;
 
-      var DataTextBlock = new TextBlock();//new System.Windows.Documents.Run(data));
-      DataTextBlock.Text = Data;
-      DataTextBlock.ClipToBounds = true;
-      DataTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
+      for (int i = 0; i < Caption.Length; i++)
+      {
+        var DataStackPanel = new StackPanel();
+        RowStackPanel.Children.Add(DataStackPanel);
+        DataStackPanel.Orientation = Orientation.Horizontal;
 
-      var DataLabel = new Label();
-      DataStackPanel.Children.Add(DataLabel);
-      DataLabel.Content = DataTextBlock;
+        var CaptionLabel = new Label();
+        DataStackPanel.Children.Add(CaptionLabel);
+        CaptionLabel.Content = Caption[i];
+        CaptionLabel.FontWeight = FontWeights.Heavy;
 
-      var DataToolTip = new ToolTip();
-      DataLabel.ToolTip = DataToolTip;
-      DataToolTip.PlacementTarget = DataLabel;
-      DataToolTip.Placement = System.Windows.Controls.Primitives.PlacementMode.RelativePoint;
-      DataToolTip.Content = Data;
+        var DataTextBlock = new TextBlock();
+        DataTextBlock.Text = Data[i];
+        DataTextBlock.ClipToBounds = true;
+        DataTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
+
+        var DataLabel = new Label();
+        DataStackPanel.Children.Add(DataLabel);
+        DataLabel.Content = DataTextBlock;
+
+        var DataToolTip = new ToolTip();
+        DataLabel.ToolTip = DataToolTip;
+        DataToolTip.PlacementTarget = DataLabel;
+        DataToolTip.Placement = System.Windows.Controls.Primitives.PlacementMode.RelativePoint;
+        DataToolTip.Content = Data;
+      }
     }
   }
 }

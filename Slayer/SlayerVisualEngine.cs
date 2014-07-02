@@ -41,14 +41,17 @@ namespace Slayer
       MainBorder = new Border();
       Window.Content = MainBorder;
       MainBorder.Padding = new Thickness(4);
-      MainBorder.Background = Brushes.WhiteSmoke;
+      MainBorder.Background = Brushes.White;
     }
 
     public void Install()
     {
       ProcessList.Sort(SortByStartTime);
 
-      Window.Title = String.Format("Processes ({0})", ProcessList.Count);
+      Window.Title = String.Format("\"{0}\" Processes ({1})", ProcessList.First().ProcessName, ProcessList.Count);
+      
+      var IconUri = new Uri("pack://application:,,,/Slayer;component/Images/Close-128.ico"); // File needs to be set as a resource in it's properties
+      Window.Icon = new System.Windows.Media.Imaging.BitmapImage(IconUri);
       
       var MainGrid = new Grid();
       MainBorder.Child = MainGrid;
@@ -65,14 +68,20 @@ namespace Slayer
       ProcessVisualEngine.MainBorder = ProcessBorder;
       ProcessVisualEngine.ProcessList = ProcessList;
       ProcessVisualEngine.Install();
-      
+
+      var ButtonBorder = new Border();
+      MainGrid.Children.Add(ButtonBorder);
+      ButtonBorder.Background = Brushes.DarkGray;
+      ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
+      ButtonBorder.VerticalAlignment = VerticalAlignment.Bottom;
+
       var ButtonStackPanel = new StackPanel();
-      MainGrid.Children.Add(ButtonStackPanel);
+      ButtonBorder.Child = ButtonStackPanel;
       Grid.SetRow(ButtonStackPanel, 1);
       ButtonStackPanel.Orientation = Orientation.Horizontal;
       ButtonStackPanel.Margin = new Thickness(5);
       ButtonStackPanel.Height = 30;
-      ButtonStackPanel.VerticalAlignment = VerticalAlignment.Bottom;
+      ButtonStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
       
       var KillAllButton = NewButton("Kill All");
       ButtonStackPanel.Children.Add(KillAllButton);
@@ -122,8 +131,8 @@ namespace Slayer
       Result.VerticalAlignment = VerticalAlignment.Bottom;
       Result.Margin = new Thickness(0, 0, 7, 0);
       Result.Padding = new Thickness(5);
-      Result.Background = Brushes.DarkBlue;
-      Result.Foreground = Brushes.White;
+      Result.Background = Brushes.WhiteSmoke;
+      Result.Foreground = Brushes.OrangeRed;
       Result.FontSize = 15;
       Result.MinWidth = MinimumButtonWidth;
 
