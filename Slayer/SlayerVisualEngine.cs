@@ -41,7 +41,7 @@ namespace Slayer
       MainBorder = new Border();
       Window.Content = MainBorder;
       MainBorder.Padding = new Thickness(4);
-      MainBorder.Background = Brushes.LightSteelBlue;
+      MainBorder.Background = Brushes.WhiteSmoke;
     }
 
     public void Install()
