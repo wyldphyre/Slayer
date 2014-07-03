@@ -234,7 +234,7 @@ namespace Slayer
         DataLabel.ToolTip = DataToolTip;
         DataToolTip.PlacementTarget = DataLabel;
         DataToolTip.Placement = System.Windows.Controls.Primitives.PlacementMode.RelativePoint;
-        DataToolTip.Content = Data;
+        DataToolTip.Content = Data[i];
       }
     }
   }
