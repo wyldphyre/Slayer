@@ -23,33 +23,15 @@ namespace Slayer
     public string ProcessName { get; set; }
     public List<string> Arguments { get { return arguments; } }
 
-    public void Execute()
+    public SlayerApplication()
     {
-      var Application = new Application();    
+      this.Application = new Application();
+      this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+      this.SlayableSection = (SlayableConfigurationSection)ConfigurationManager.GetSection("slayableSection");
+    }
 
-      var JumpList = new JumpList();
-      var SlayableSection = (SlayableConfigurationSection)ConfigurationManager.GetSection("slayableSection");
-      
-      if (SlayableSection != null)
-      {
-        var ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-
-        foreach (SlayableApplicationElement Element in SlayableSection.Applications)
-        {
-          var Task = new JumpTask();
-          JumpList.JumpItems.Add(Task);
-          Task.CustomCategory = "Slay";
-          Task.ApplicationPath = ApplicationFilePath;
-          Task.Title = Element.Name;
-          Task.Arguments = Element.ProcessName;
-          if (Element.Preview)
-            Task.Arguments += @" /AlwaysPreview";
-        }
-      }
-
-      // The entire JumpList is replaced each time
-      JumpList.SetJumpList(Application, JumpList);
-          
+    public void Execute()
+    {     
       foreach (string argument in Arguments)
       {
         if (argument.StartsWith(@"\"))
@@ -126,5 +108,32 @@ namespace Slayer
         }   
       }
     }
+
+    public void SetupJumpList()
+    {
+      var JumpList = new JumpList();
+
+      if (SlayableSection != null)
+      {
+        foreach (SlayableApplicationElement Element in SlayableSection.Applications)
+        {
+          var Task = new JumpTask();
+          JumpList.JumpItems.Add(Task);
+          Task.CustomCategory = "Slay";
+          Task.ApplicationPath = ApplicationFilePath;
+          Task.Title = Element.Name;
+          Task.Arguments = Element.ProcessName;
+          if (Element.Preview)
+            Task.Arguments += @" /AlwaysPreview";
+        }
+      }
+
+      // The entire JumpList is replaced each time
+      JumpList.SetJumpList(Application, JumpList);
+    }
+
+    private Application Application;
+    private string ApplicationFilePath;
+    private SlayableConfigurationSection SlayableSection;
   }
 }

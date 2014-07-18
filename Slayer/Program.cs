@@ -16,10 +16,11 @@ namespace Slayer
     [System.STAThread]
     static void Main(string[] Arguments)
     {
+      SlayerApplication slayerApplication = new SlayerApplication();
+      slayerApplication.SetupJumpList();
+
       if (Arguments.Length > 0)
       {
-        SlayerApplication slayerApplication = new SlayerApplication();
-
         slayerApplication.Arguments.AddRange(Arguments);
 
         slayerApplication.Execute();
