@@ -23,6 +23,12 @@ namespace Slayer
     {
       get { return (bool)this["preview"]; }
     }
+
+    [ConfigurationProperty("default", IsKey=true, IsRequired=false)]
+    public bool Default
+    {
+      get { return (bool)this["default"]; }
+    }
   }
 
   class SlayableApplicationElementCollection : ConfigurationElementCollection
