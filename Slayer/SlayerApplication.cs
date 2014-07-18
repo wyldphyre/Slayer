@@ -31,34 +31,49 @@ namespace Slayer
     }
 
     public void Execute()
-    {     
-      foreach (string argument in Arguments)
+    {
+      if (arguments.Count > 0)
       {
-        if (argument.StartsWith(@"\"))
+        foreach (string argument in Arguments)
         {
-          MessageBox.Show(string.Format("Incorrect switch {0}. Use '-' or '/' instead of '\\'.", argument));
-          return;
-        }
-        if (argument.StartsWith("-") || argument.StartsWith("/"))
-        {
-          // arguments with a switch indicator character at the front are assumed to be switches
-          var switchArgument = argument.Remove(0, 1);
-
-          if (switchArgument.ToUpper() == "AlwaysPreview".ToUpper())
+          if (argument.StartsWith(@"\"))
           {
-            alwaysPreview = true;
+            MessageBox.Show(string.Format("Incorrect switch {0}. Use '-' or '/' instead of '\\'.", argument));
+            return;
+          }
+          if (argument.StartsWith("-") || argument.StartsWith("/"))
+          {
+            // arguments with a switch indicator character at the front are assumed to be switches
+            var switchArgument = argument.Remove(0, 1);
+
+            if (switchArgument.ToUpper() == "AlwaysPreview".ToUpper())
+            {
+              alwaysPreview = true;
+            }
+            else
+            {
+              MessageBox.Show(String.Format("The switch parameter \"{0}\" is not recognised.", switchArgument));
+              return; // do not continue running the application if there is something wrong with the parameters
+            }
           }
           else
           {
-            MessageBox.Show(String.Format("The switch parameter \"{0}\" is not recognised.", switchArgument));
-            return; // do not continue running the application if there is something wrong with the parameters
+            // arguments without switch indicator are assumed to be process names.
+            // TO DO: Currently only the last process name listed will be used.
+            ProcessName = argument;
           }
         }
-        else
+      }
+      else
+      {
+        foreach (SlayableApplicationElement Element in SlayableSection.Applications)
         {
-          // arguments without switch indicator are assumed to be process names.
-          // TO DO: Currently only the last process name listed will be used.
-          ProcessName = argument;
+          if (Element.Default)
+          {
+            ProcessName = Element.ProcessName;
+            alwaysPreview = Element.Preview;
+            break;
+          }
         }
       }
 
@@ -68,12 +83,12 @@ namespace Slayer
 
       if (sanitisedProcessName.EndsWith(".exe"))
         sanitisedProcessName = sanitisedProcessName.Remove(sanitisedProcessName.Length - ".exe".Length);
-      
+
       // TODO: Should the app also handle the user passing in a path instead of 'friendly' process name?
 
       ProcessesArray = Process.GetProcessesByName(sanitisedProcessName);
 
-      if (ProcessesArray.Length > 0) 
+      if (ProcessesArray.Length > 0)
       {
         if ((ProcessesArray.Length == 1) && !alwaysPreview)
         {
@@ -93,10 +108,10 @@ namespace Slayer
             MessageBox.Show(Event.Exception.Message, "Exception");
             Event.Handled = true;
           };
-          
+
           var MainWindow = new Window();
           Application.MainWindow = MainWindow;
-          
+
           var VisualEngine = new SlayerVisualEngine(MainWindow);
           VisualEngine.ProcessList = ProcessList;
           VisualEngine.Application = Application;
@@ -105,7 +120,7 @@ namespace Slayer
           MainWindow.Show();
 
           Application.Run();
-        }   
+        }
       }
     }
 

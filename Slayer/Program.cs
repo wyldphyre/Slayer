@@ -19,12 +19,9 @@ namespace Slayer
       SlayerApplication slayerApplication = new SlayerApplication();
       slayerApplication.SetupJumpList();
 
-      if (Arguments.Length > 0)
-      {
-        slayerApplication.Arguments.AddRange(Arguments);
+      slayerApplication.Arguments.AddRange(Arguments);
 
-        slayerApplication.Execute();
-      }
+      slayerApplication.Execute();
     }
   }
 }
