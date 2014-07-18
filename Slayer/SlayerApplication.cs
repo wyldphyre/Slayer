@@ -136,8 +136,10 @@ namespace Slayer
           JumpList.JumpItems.Add(Task);
           Task.CustomCategory = "Slay";
           Task.ApplicationPath = ApplicationFilePath;
-          Task.Title = Element.Name;
           Task.Arguments = Element.ProcessName;
+          Task.Title = Element.Name;
+          if (Element.Default)
+            Task.Title += " [default]";
           if (Element.Preview)
             Task.Arguments += @" /AlwaysPreview";
         }
