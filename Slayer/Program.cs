@@ -17,7 +17,6 @@ namespace Slayer
     static void Main(string[] Arguments)
     {
       SlayerApplication slayerApplication = new SlayerApplication();
-      slayerApplication.SetupJumpList();
 
       slayerApplication.Arguments.AddRange(Arguments);
 

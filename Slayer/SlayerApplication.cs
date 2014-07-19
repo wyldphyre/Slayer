@@ -32,6 +32,8 @@ namespace Slayer
 
     public void Execute()
     {
+      SetupJumpList();
+
       if (arguments.Count > 0)
       {
         foreach (string argument in Arguments)
@@ -124,7 +126,7 @@ namespace Slayer
       }
     }
 
-    public void SetupJumpList()
+    private void SetupJumpList()
     {
       var JumpList = new JumpList();
 
