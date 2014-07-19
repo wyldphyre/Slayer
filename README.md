@@ -10,4 +10,9 @@ I built this to provide a quick way to kill processes that for one reason or ano
 The simplest way to setup is to pin the .exe file to your taskbase in Windows and have it run by taking it's configuration from the Slayer.exe.config file. It is also possible to pass parameters to Slayer.exe.
 
 
-TODO: Cover setup and use of command line switches
+### TODO: 
+* Cover setup and use of the configuration file
+* Cover command line switches
+
+### Roadmap
+* May implement a colour theme system
