@@ -19,6 +19,11 @@ namespace Slayer
     private Window Window;
     private Border MainBorder { get; set; }
 
+    private Brush BackgroundBrush = Brushes.White;
+    private Brush ButtonBorderBrush = Brushes.DarkGray;
+    private Brush ButtonBackground = Brushes.WhiteSmoke;
+    private Brush ButtonForeground = Brushes.OrangeRed;
+
     public Application Application { get; set; }
     public List<Process> ProcessList { get; set; }
 
@@ -31,7 +36,7 @@ namespace Slayer
       Window.Width = 400;
       Window.Height = 470;
       Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-      Window.Background = Brushes.White;
+      Window.Background = BackgroundBrush;
       Window.KeyUp += (object sender, System.Windows.Input.KeyEventArgs Event) =>
       {
         if (Event.Key == Key.Escape)
@@ -71,7 +76,7 @@ namespace Slayer
 
       var ButtonBorder = new Border();
       MainGrid.Children.Add(ButtonBorder);
-      ButtonBorder.Background = Brushes.DarkGray;
+      ButtonBorder.Background = ButtonBorderBrush;
       ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
       ButtonBorder.VerticalAlignment = VerticalAlignment.Bottom;
 
@@ -131,8 +136,8 @@ namespace Slayer
       Result.VerticalAlignment = VerticalAlignment.Bottom;
       Result.Margin = new Thickness(0, 0, 7, 0);
       Result.Padding = new Thickness(5);
-      Result.Background = Brushes.WhiteSmoke;
-      Result.Foreground = Brushes.OrangeRed;
+      Result.Background = ButtonBackground;
+      Result.Foreground = ButtonForeground;
       Result.FontSize = 15;
       Result.MinWidth = MinimumButtonWidth;
 
