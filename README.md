@@ -11,6 +11,7 @@ The simplest way to setup is to pin the .exe file to your taskbase in Windows an
 
 
 ### TODO: 
+* Display version information in the title bar
 * Cover setup and use of the configuration file
 * Cover command line switches
 
