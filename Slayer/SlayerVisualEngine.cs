@@ -53,7 +53,8 @@ namespace Slayer
     {
       ProcessList.Sort(SortByStartTime);
 
-      Window.Title = String.Format("\"{0}\" Processes ({1})", ProcessList.First().ProcessName, ProcessList.Count);
+      var AssemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+      Window.Title = String.Format("{0} v{1}", AssemblyName.Name, AssemblyName.Version.ToString().TrimEnd('.', '0'));
       
       var IconUri = new Uri("pack://application:,,,/Slayer;component/Images/Close-128.ico"); // File needs to be set as a resource in it's properties
       Window.Icon = new System.Windows.Media.Imaging.BitmapImage(IconUri);
