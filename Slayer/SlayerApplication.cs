@@ -141,7 +141,7 @@ namespace Slayer
           Task.Arguments = Element.ProcessName;
           Task.Title = Element.Name;
           if (Element.Default)
-            Task.Title += " [default]";
+            Task.Title += " \u2605";//★
           if (Element.Preview)
             Task.Arguments += @" /AlwaysPreview";
         }
