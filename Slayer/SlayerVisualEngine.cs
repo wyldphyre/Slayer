@@ -33,7 +33,7 @@ namespace Slayer
 
       Window.FontFamily = new FontFamily("Calibri");
       Window.FontSize = 13;
-      Window.Width = 400;
+      Window.Width = 410;
       Window.Height = 470;
       Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
       Window.Background = BackgroundBrush;
@@ -58,29 +58,19 @@ namespace Slayer
       
       var IconUri = new Uri("pack://application:,,,/Slayer;component/Images/Close-128.ico"); // File needs to be set as a resource in it's properties
       Window.Icon = new System.Windows.Media.Imaging.BitmapImage(IconUri);
-      
-      var MainGrid = new Grid();
-      MainBorder.Child = MainGrid;
-      MainGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1,GridUnitType.Star) });
-      MainGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
-      MainGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-      
-      var ProcessBorder = new Border();
-      MainGrid.Children.Add(ProcessBorder);
-      Grid.SetRow(ProcessBorder, 0);
-      
-      var ProcessVisualEngine = new ProcessVisualEngine();
-      ProcessVisualEngine.Application = Application;
-      ProcessVisualEngine.MainBorder = ProcessBorder;
-      ProcessVisualEngine.ProcessList = ProcessList;
-      ProcessVisualEngine.Install();
+
+      var DockPanel = new DockPanel();
+      MainBorder.Child = DockPanel;
+      DockPanel.LastChildFill = false;
+      DockPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
       var ButtonBorder = new Border();
-      MainGrid.Children.Add(ButtonBorder);
+      DockPanel.Children.Add(ButtonBorder);
+      DockPanel.SetDock(ButtonBorder, Dock.Bottom);
+      //MainGrid.Children.Add(ButtonBorder);
       ButtonBorder.Background = ButtonBorderBrush;
       ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
-      ButtonBorder.VerticalAlignment = VerticalAlignment.Bottom;
-
+      
       var ButtonStackPanel = new StackPanel();
       ButtonBorder.Child = ButtonStackPanel;
       Grid.SetRow(ButtonStackPanel, 1);
@@ -128,6 +118,15 @@ namespace Slayer
         YoungestProcess.Kill();
         Application.Shutdown();
       };
+
+      var ProcessBorder = new Border();
+      DockPanel.Children.Add(ProcessBorder);
+      
+      var ProcessVisualEngine = new ProcessVisualEngine();
+      ProcessVisualEngine.Application = Application;
+      ProcessVisualEngine.MainBorder = ProcessBorder;
+      ProcessVisualEngine.ProcessList = ProcessList;
+      ProcessVisualEngine.Install();
     }
 
     private Button NewButton(string Caption)
