@@ -19,24 +19,25 @@ namespace Slayer
     private Window Window;
     private Border MainBorder { get; set; }
 
-    private Brush BackgroundBrush = Brushes.White;
-    private Brush ButtonBorderBrush = Brushes.DarkGray;
-    private Brush ButtonBackground = Brushes.WhiteSmoke;
-    private Brush ButtonForeground = Brushes.OrangeRed;
+    //private Brush ApplicationBackground = Brushes.White;
+    //private Brush ApplicationButtonBorder = Brushes.DarkGray;
+    //private Brush ApplicationButtonBackground = Brushes.WhiteSmoke;
+    //private Brush ApplicationButtonForeground = Brushes.OrangeRed;
 
+    public ColourTheme Theme { get; set; }
     public Application Application { get; set; }
     public List<Process> ProcessList { get; set; }
 
     public SlayerVisualEngine(Window Window)
     {
       this.Window = Window;
+      this.Theme = Theme;
 
       Window.FontFamily = new FontFamily("Calibri");
       Window.FontSize = 13;
       Window.Width = 410;
       Window.Height = 470;
       Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-      Window.Background = BackgroundBrush;
       Window.KeyUp += (object sender, System.Windows.Input.KeyEventArgs Event) =>
       {
         if (Event.Key == Key.Escape)
@@ -46,11 +47,12 @@ namespace Slayer
       MainBorder = new Border();
       Window.Content = MainBorder;
       MainBorder.Padding = new Thickness(4);
-      MainBorder.Background = Brushes.White;
     }
 
     public void Install()
     {
+      MainBorder.Background = Theme.ApplicationBackground;
+
       ProcessList.Sort(SortByStartTime);
 
       var AssemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
@@ -68,7 +70,7 @@ namespace Slayer
       DockPanel.Children.Add(ButtonBorder);
       DockPanel.SetDock(ButtonBorder, Dock.Bottom);
       //MainGrid.Children.Add(ButtonBorder);
-      ButtonBorder.Background = ButtonBorderBrush;
+      ButtonBorder.Background = Theme.ApplicationButtonBorder;
       ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
       
       var ButtonStackPanel = new StackPanel();
@@ -123,6 +125,7 @@ namespace Slayer
       DockPanel.Children.Add(ProcessBorder);
       
       var ProcessVisualEngine = new ProcessVisualEngine();
+      ProcessVisualEngine.Theme = Theme;
       ProcessVisualEngine.Application = Application;
       ProcessVisualEngine.MainBorder = ProcessBorder;
       ProcessVisualEngine.ProcessList = ProcessList;
@@ -136,8 +139,8 @@ namespace Slayer
       Result.VerticalAlignment = VerticalAlignment.Bottom;
       Result.Margin = new Thickness(0, 0, 7, 0);
       Result.Padding = new Thickness(5);
-      Result.Background = ButtonBackground;
-      Result.Foreground = ButtonForeground;
+      Result.Background = Theme.ApplicationButtonBackground;
+      Result.Foreground = Theme.ApplicationButtonForeground;
       Result.FontSize = 15;
       Result.MinWidth = MinimumButtonWidth;
 

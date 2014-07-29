@@ -19,6 +19,7 @@ namespace Slayer
     private List<string> arguments = new List<string>();
     private Process[] ProcessesArray = null;
     private bool alwaysPreview = false;
+    private ColourTheme Theme;
 
     public string ProcessName { get; set; }
     public List<string> Arguments { get { return arguments; } }
@@ -28,6 +29,32 @@ namespace Slayer
       this.Application = new Application();
       this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
       this.SlayableSection = (SlayableConfigurationSection)ConfigurationManager.GetSection("slayableSection");
+
+      Theme = new ColourTheme();
+      Theme.Default();
+
+      // colour themes
+      var ColourThemeSection = (SlayerColourThemeSection)ConfigurationManager.GetSection("slayerColourThemeSection");
+
+      if (ColourThemeSection != null && ColourThemeSection.Theme != "" && !ColourThemeSection.Theme.Equals("default", StringComparison.CurrentCultureIgnoreCase))
+      {
+        // load the specified theme from the list
+        SlayerColourThemeElement ColourTheme = null;
+        
+        foreach (SlayerColourThemeElement ThemeElement in ColourThemeSection.Themes)
+        {
+          if (ThemeElement.Name.Equals(ColourThemeSection.Theme, StringComparison.CurrentCultureIgnoreCase))
+          {
+            ColourTheme = ThemeElement;
+            break;
+          }
+        }
+
+        if (ColourTheme == null)
+          throw new ApplicationException(string.Format("Could not locate theme '{0}'", ColourThemeSection.Theme));
+
+        Theme.Load(ColourTheme);
+      }
     }
 
     public void Execute()
@@ -114,9 +141,12 @@ namespace Slayer
           var MainWindow = new Window();
           Application.MainWindow = MainWindow;
 
-          var VisualEngine = new SlayerVisualEngine(MainWindow);
-          VisualEngine.ProcessList = ProcessList;
-          VisualEngine.Application = Application;
+          var VisualEngine = new SlayerVisualEngine(MainWindow)
+          {
+            Theme = this.Theme,
+            ProcessList = ProcessList,
+            Application = Application
+          };
           VisualEngine.Install();
 
           MainWindow.Show();

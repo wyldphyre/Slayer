@@ -16,20 +16,22 @@ namespace Slayer
 {
   class ProcessVisualEngine
   {
+    private Dictionary<Button, Process> buttonProcessDictionary = new Dictionary<Button, Process>();
+
+    public ColourTheme Theme { get; set; }
     public Application Application { get; set; }
     public Border MainBorder { get; set; }
     public List<Process> ProcessList { get; set; }
-    private Dictionary<Button, Process> buttonProcessDictionary = new Dictionary<Button, Process>();
 
     [DllImport("user32.dll")]
     static extern bool SetForegroundWindow(IntPtr hWnd);
 
     private const double MinimumButtonWidth = 75;
-    private Brush ProcessBorderBackground = Brushes.WhiteSmoke;
-    private Brush ProcessBorderBorderBrush = Brushes.DarkGray;
-    private Brush ProcessButtonBorderBrush = Brushes.Transparent;
-    private Brush ProcessButtonBackground = Brushes.Transparent;
-    private Brush ProcessButtonForeground = Brushes.OrangeRed;
+    //private Brush ProcessBorderBackground = Brushes.WhiteSmoke;
+    //private Brush ProcessBorderBorder = Brushes.DarkGray;
+    //private Brush ProcessButtonBorder = Brushes.Transparent;
+    //private Brush ProcessButtonBackground = Brushes.Transparent;
+    //private Brush ProcessButtonForeground = Brushes.OrangeRed;
 
     public void Install()
     {
@@ -52,8 +54,8 @@ namespace Slayer
         var ProcessBorder = new Border();
         ProcessesStackPanel.Children.Add(ProcessBorder);
         ProcessBorder.BorderThickness = new Thickness(1, 1, 2, 2);
-        ProcessBorder.Background = ProcessBorderBackground;
-        ProcessBorder.BorderBrush = ProcessBorderBorderBrush;
+        ProcessBorder.Background = Theme.ProcessBorderBackground;
+        ProcessBorder.BorderBrush = Theme.ProcessBorderBorder;
         ProcessBorder.Margin = new Thickness(4, 8, 8, 8);
         ProcessBorder.Padding = new Thickness(2);
         ProcessBorder.CornerRadius = new CornerRadius(5);
@@ -138,11 +140,11 @@ namespace Slayer
     {
       var Result = new Button();
       Result.Content = Caption;
-      Result.Background = ProcessButtonBackground;
-      Result.BorderBrush = ProcessButtonBorderBrush;
+      Result.Background = Theme.ProcessButtonBackground;
+      Result.BorderBrush = Theme.ProcessButtonBorder;
       Result.Margin = new Thickness(0, 0, 7, 0);
       Result.Padding = new Thickness(5);
-      Result.Foreground = ProcessButtonForeground;
+      Result.Foreground = Theme.ProcessButtonForeground;
       Result.FontSize = 15;
       Result.MinWidth = MinimumButtonWidth;
 
@@ -200,7 +202,7 @@ namespace Slayer
     }
     private void ProduceDataRow(StackPanel Parent, string Caption, string Data)
     {
-      ProduceDataRow(Parent, new string[] { Caption}, new string[] { Data });
+      ProduceDataRow(Parent, new string[] { Caption }, new string[] { Data });
     }
     private void ProduceDataRow(StackPanel Parent, string[] Caption, string[] Data)
     {
@@ -220,15 +222,19 @@ namespace Slayer
         DataStackPanel.Children.Add(CaptionLabel);
         CaptionLabel.Content = Caption[i];
         CaptionLabel.FontWeight = FontWeights.Heavy;
+        CaptionLabel.Foreground = Theme.ProcessCaptionForeground;
 
         var DataTextBlock = new TextBlock();
         DataTextBlock.Text = Data[i];
-        DataTextBlock.ClipToBounds = true;
+        //DataTextBlock.ClipToBounds = true;
         DataTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
+        DataTextBlock.TextWrapping = TextWrapping.Wrap;
+        DataTextBlock.Foreground = Theme.ProcessDataForeground;
 
         var DataLabel = new Label();
         DataStackPanel.Children.Add(DataLabel);
         DataLabel.Content = DataTextBlock;
+        //DataLabel.ClipToBounds = true;
 
         var DataToolTip = new ToolTip();
         DataLabel.ToolTip = DataToolTip;
