@@ -55,7 +55,7 @@ namespace Slayer
         ProcessesStackPanel.Children.Add(ProcessBorder);
         ProcessBorder.BorderThickness = new Thickness(1, 1, 2, 2);
         ProcessBorder.Background = Theme.ProcessBorderBackground;
-        ProcessBorder.BorderBrush = Theme.ProcessBorderBorder;
+        ProcessBorder.BorderBrush = Theme.ProcessBorder;
         ProcessBorder.Margin = new Thickness(4, 8, 8, 8);
         ProcessBorder.Padding = new Thickness(2);
         ProcessBorder.CornerRadius = new CornerRadius(5);
@@ -199,6 +199,7 @@ namespace Slayer
       HeadingLabel.FontWeight = FontWeights.Bold;
       HeadingLabel.FontSize = 18;
       HeadingLabel.HorizontalAlignment = HorizontalAlignment.Center;
+      HeadingLabel.Foreground = Theme.ProcessHeadingForeground;
     }
     private void ProduceDataRow(StackPanel Parent, string Caption, string Data)
     {
@@ -211,6 +212,7 @@ namespace Slayer
       var RowStackPanel = new StackPanel();
       Parent.Children.Add(RowStackPanel);
       RowStackPanel.Orientation = Orientation.Horizontal;
+      RowStackPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
       for (int i = 0; i < Caption.Length; i++)
       {

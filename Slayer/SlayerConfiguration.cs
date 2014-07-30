@@ -108,16 +108,20 @@ namespace Slayer
     {
       get { return (string)this["ApplicationButtonForeground"]; }
     }
-
+    [ConfigurationProperty("ProcessHeadingForeground", IsKey = true, IsRequired = false)]
+    public string ProcessHeadingForeground
+    {
+      get { return (string)this["ProcessHeadingForeground"]; }
+    }
     [ConfigurationProperty("ProcessBorderBackground", IsKey = true, IsRequired = false)]
     public string ProcessBorderBackground
     {
       get { return (string)this["ProcessBorderBackground"]; }
     }
-    [ConfigurationProperty("ProcessBorderBorder", IsKey = true, IsRequired = false)]
-    public string ProcessBorderBorder
+    [ConfigurationProperty("ProcessBorder", IsKey = true, IsRequired = false)]
+    public string ProcessBorder
     {
-      get { return (string)this["ProcessBorderBorder"]; }
+      get { return (string)this["ProcessBorder"]; }
     }
     [ConfigurationProperty("ProcessButtonBorder", IsKey = true, IsRequired = false)]
     public string ProcessButtonBorder
@@ -152,9 +156,9 @@ namespace Slayer
     public Brush ApplicationButtonBorder { get; private set; }
     public Brush ApplicationButtonBackground { get; private set; }
     public Brush ApplicationButtonForeground { get; private set; }
-
+    public Brush ProcessHeadingForeground { get; private set; }
     public Brush ProcessBorderBackground { get; private set; }
-    public Brush ProcessBorderBorder { get; private set; }
+    public Brush ProcessBorder { get; private set; }
     public Brush ProcessButtonBorder { get; private set; }
     public Brush ProcessButtonBackground { get; private set; }
     public Brush ProcessButtonForeground { get; private set; }
@@ -167,9 +171,9 @@ namespace Slayer
       ApplicationButtonBorder = Brushes.DarkGray;
       ApplicationButtonBackground = Brushes.WhiteSmoke;
       ApplicationButtonForeground = Brushes.OrangeRed;
-    
+      ProcessHeadingForeground = Brushes.Black;
       ProcessBorderBackground = Brushes.WhiteSmoke;
-      ProcessBorderBorder = Brushes.DarkGray;
+      ProcessBorder = Brushes.DarkGray;
       ProcessButtonBorder = Brushes.Transparent;
       ProcessButtonBackground = Brushes.Transparent;
       ProcessButtonForeground = Brushes.OrangeRed;
@@ -182,16 +186,36 @@ namespace Slayer
 
       if (ThemeElement.ApplicationBackground != "")
         ApplicationBackground = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationBackground);
-      
-      //ApplicationButtonBorder;
-      //ApplicationButtonBackground;
-      //ApplicationButtonForeground;
 
-      //ProcessBorderBackground;
-      //ProcessBorderBorder;
-      //ProcessButtonBorder;
-      //ProcessButtonBackground;
-      //ProcessButtonForeground;
+      if (ThemeElement.ApplicationButtonBorder != "")
+        ApplicationButtonBackground = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationButtonBackground);
+
+      if (ThemeElement.ApplicationButtonBorder != "")
+        ApplicationButtonBorder = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationButtonBorder);
+
+      if (ThemeElement.ApplicationButtonBackground != "")
+        ApplicationButtonBackground = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationButtonBackground);
+
+      if (ThemeElement.ApplicationButtonForeground != "")
+        ApplicationButtonForeground = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationButtonForeground);
+
+      if (ThemeElement.ProcessHeadingForeground != "")
+        ProcessHeadingForeground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessHeadingForeground);
+
+      if (ThemeElement.ProcessBorderBackground != "")
+        ProcessBorderBackground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessBorderBackground);
+
+      if (ThemeElement.ProcessBorder != "")
+        ProcessBorder = (Brush)Converter.ConvertFromString(ThemeElement.ProcessBorder);
+
+      if (ThemeElement.ProcessButtonBorder != "")
+        ProcessButtonBorder = (Brush)Converter.ConvertFromString(ThemeElement.ProcessButtonBorder);
+
+      if (ThemeElement.ProcessButtonBackground != "")
+        ProcessButtonBackground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessButtonBackground);
+            
+      if (ThemeElement.ProcessButtonForeground != "")
+        ProcessButtonForeground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessButtonForeground);
 
       if (ThemeElement.ProcessCaptionForeground != "")
         ProcessCaptionForeground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessCaptionForeground);

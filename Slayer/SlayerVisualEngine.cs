@@ -35,7 +35,7 @@ namespace Slayer
 
       Window.FontFamily = new FontFamily("Calibri");
       Window.FontSize = 13;
-      Window.Width = 410;
+      Window.Width = 400;
       Window.Height = 470;
       Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
       Window.KeyUp += (object sender, System.Windows.Input.KeyEventArgs Event) =>
@@ -69,7 +69,6 @@ namespace Slayer
       var ButtonBorder = new Border();
       DockPanel.Children.Add(ButtonBorder);
       DockPanel.SetDock(ButtonBorder, Dock.Bottom);
-      //MainGrid.Children.Add(ButtonBorder);
       ButtonBorder.Background = Theme.ApplicationButtonBorder;
       ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
       
