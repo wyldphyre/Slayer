@@ -119,6 +119,7 @@ namespace Slayer
         Application.Shutdown();
       };
 
+      DockPanel.LastChildFill = true; // use to make the process border fill the window and stretch with it
       var ProcessBorder = new Border();
       DockPanel.Children.Add(ProcessBorder);
       
