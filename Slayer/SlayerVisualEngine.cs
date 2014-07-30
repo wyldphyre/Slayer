@@ -19,11 +19,6 @@ namespace Slayer
     private Window Window;
     private Border MainBorder { get; set; }
 
-    //private Brush ApplicationBackground = Brushes.White;
-    //private Brush ApplicationButtonBorder = Brushes.DarkGray;
-    //private Brush ApplicationButtonBackground = Brushes.WhiteSmoke;
-    //private Brush ApplicationButtonForeground = Brushes.OrangeRed;
-
     public ColourTheme Theme { get; set; }
     public Application Application { get; set; }
     public List<Process> ProcessList { get; set; }
@@ -120,6 +115,7 @@ namespace Slayer
         Application.Shutdown();
       };
 
+      DockPanel.LastChildFill = true; // use to make the process border fill the window and stretch with it
       var ProcessBorder = new Border();
       DockPanel.Children.Add(ProcessBorder);
       
