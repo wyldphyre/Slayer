@@ -27,11 +27,6 @@ namespace Slayer
     static extern bool SetForegroundWindow(IntPtr hWnd);
 
     private const double MinimumButtonWidth = 75;
-    //private Brush ProcessBorderBackground = Brushes.WhiteSmoke;
-    //private Brush ProcessBorderBorder = Brushes.DarkGray;
-    //private Brush ProcessButtonBorder = Brushes.Transparent;
-    //private Brush ProcessButtonBackground = Brushes.Transparent;
-    //private Brush ProcessButtonForeground = Brushes.OrangeRed;
 
     public void Install()
     {
