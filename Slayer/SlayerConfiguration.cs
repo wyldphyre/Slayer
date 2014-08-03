@@ -61,6 +61,7 @@ namespace Slayer
     public string Theme
     {
       get { return (string)this["theme"]; }
+      set { this["theme"] = value; }
     }
     [ConfigurationProperty("themes")]
     public SlayerColourThemeElementCollection Themes
