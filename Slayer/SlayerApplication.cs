@@ -19,7 +19,7 @@ namespace Slayer
     private List<string> arguments = new List<string>();
     private Process[] ProcessesArray = null;
     private bool alwaysPreview = false;
-    private ColourTheme Theme;
+    private Theme Theme;
 
     public string ProcessName { get; set; }
     public List<string> Arguments { get { return arguments; } }
@@ -30,8 +30,7 @@ namespace Slayer
       this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
       this.SlayableSection = (SlayableConfigurationSection)ConfigurationManager.GetSection("slayableSection");
 
-      Theme = new ColourTheme();
-      Theme.Default();
+      Theme = ThemeHelper.Default();
 
       // colour themes
       var ColourThemeSection = (SlayerColourThemeSection)ConfigurationManager.GetSection("slayerColourThemeSection");
@@ -53,7 +52,7 @@ namespace Slayer
         if (ColourTheme == null)
           throw new ApplicationException(string.Format("Could not locate theme '{0}'", ColourThemeSection.Theme));
 
-        Theme.Load(ColourTheme);
+        Theme = ThemeHelper.Load(ColourTheme);
       }
     }
 

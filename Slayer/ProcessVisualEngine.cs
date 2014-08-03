@@ -18,7 +18,7 @@ namespace Slayer
   {
     private Dictionary<Button, Process> buttonProcessDictionary = new Dictionary<Button, Process>();
 
-    public ColourTheme Theme { get; set; }
+    public Theme Theme { get; set; }
     public Application Application { get; set; }
     public Border MainBorder { get; set; }
     public List<Process> ProcessList { get; set; }
