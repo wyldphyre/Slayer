@@ -46,7 +46,7 @@ namespace Slayer
 
     public void Install()
     {
-      MainBorder.Background = Theme.ApplicationBackground;
+      MainBorder.Background = Theme.ApplicationBackground.AsBrush;
 
       ProcessList.Sort(SortByStartTime);
 
@@ -64,7 +64,7 @@ namespace Slayer
       var ButtonBorder = new Border();
       DockPanel.Children.Add(ButtonBorder);
       DockPanel.SetDock(ButtonBorder, Dock.Bottom);
-      ButtonBorder.Background = Theme.ApplicationButtonToolbarBackground;
+      ButtonBorder.Background = Theme.ApplicationButtonToolbarBackground.AsBrush;
       ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
       
       var ButtonStackPanel = new StackPanel();
@@ -134,9 +134,9 @@ namespace Slayer
       Result.VerticalAlignment = VerticalAlignment.Bottom;
       Result.Margin = new Thickness(0, 0, 7, 0);
       Result.Padding = new Thickness(5);
-      Result.BorderBrush = Theme.ApplicationButtonBorder;
-      Result.Background = Theme.ApplicationButtonBackground;
-      Result.Foreground = Theme.ApplicationButtonForeground;
+      Result.BorderBrush = Theme.ApplicationButtonBorder.AsBrush;
+      Result.Background = Theme.ApplicationButtonBackground.AsBrush;
+      Result.Foreground = Theme.ApplicationButtonForeground.AsBrush;
       Result.FontSize = 15;
       Result.MinWidth = MinimumButtonWidth;
 
