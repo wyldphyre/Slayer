@@ -3,7 +3,7 @@ Slayer
 
 An Windows application for quickly killing targeted processes.
 
-I built this to provide a quick way to kill processes that for one reason or another I found myself needing to kill on a regular or semi-regular basis. The primary goal that it should provide a way to select which process to kill if there was more than one of them running (the tool I was previously using would just kill all running instances of an executable).
+I built this to provide a quick way to kill processes that for one reason or another I found myself needing to kill on a regular or semi-regular basis. The primary goal was that it should provide a way to select which process to kill if there was more than one of them running (the tool I was previously using would just kill all running instances of an executable).
 
 ## Setup
 
