@@ -39,7 +39,9 @@ namespace Slayer
       this.ColourThemeSection = (SlayerColourThemeSection)Configuration.GetSection("slayerColourThemeSection");
 
       Theme = ThemeHelper.Default();
-      
+
+      // colour themes
+
       if (ColourThemeSection != null && ColourThemeSection.Theme != "" && !ColourThemeSection.Theme.Equals("default", StringComparison.CurrentCultureIgnoreCase))
       {
         // load the specified theme from the list
@@ -59,10 +61,6 @@ namespace Slayer
 
         Theme = ThemeHelper.Load(ColourTheme);
       }
-
-      //var ThemeList = new List<Theme>();
-      //ThemeList.Add(Theme);
-      //JsonHelper.SaveToFile(ThemeList, @"C:\Temp\SlayerTheme.slayerthemepackage");s
     }
 
     public void Execute()

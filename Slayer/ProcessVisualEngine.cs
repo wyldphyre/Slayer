@@ -49,8 +49,8 @@ namespace Slayer
         var ProcessBorder = new Border();
         ProcessesStackPanel.Children.Add(ProcessBorder);
         ProcessBorder.BorderThickness = new Thickness(1, 1, 2, 2);
-        ProcessBorder.Background = Theme.ProcessBorderBackground.AsBrush;
-        ProcessBorder.BorderBrush = Theme.ProcessBorder.AsBrush;
+        ProcessBorder.Background = Theme.ProcessBorderBackground;
+        ProcessBorder.BorderBrush = Theme.ProcessBorder;
         ProcessBorder.Margin = new Thickness(4, 8, 8, 8);
         ProcessBorder.Padding = new Thickness(2);
         ProcessBorder.CornerRadius = new CornerRadius(5);
@@ -135,11 +135,11 @@ namespace Slayer
     {
       var Result = new Button();
       Result.Content = Caption;
-      Result.Background = Theme.ProcessButtonBackground.AsBrush;
-      Result.BorderBrush = Theme.ProcessButtonBorder.AsBrush;
+      Result.Background = Theme.ProcessButtonBackground;
+      Result.BorderBrush = Theme.ProcessButtonBorder;
       Result.Margin = new Thickness(0, 0, 7, 0);
       Result.Padding = new Thickness(5);
-      Result.Foreground = Theme.ProcessButtonForeground.AsBrush;
+      Result.Foreground = Theme.ProcessButtonForeground;
       Result.FontSize = 15;
       Result.MinWidth = MinimumButtonWidth;
 
@@ -194,7 +194,7 @@ namespace Slayer
       HeadingLabel.FontWeight = FontWeights.Bold;
       HeadingLabel.FontSize = 18;
       HeadingLabel.HorizontalAlignment = HorizontalAlignment.Center;
-      HeadingLabel.Foreground = Theme.ProcessHeadingForeground.AsBrush;
+      HeadingLabel.Foreground = Theme.ProcessHeadingForeground;
     }
     private void ProduceDataRow(StackPanel Parent, string Caption, string Data)
     {
@@ -219,14 +219,14 @@ namespace Slayer
         DataStackPanel.Children.Add(CaptionLabel);
         CaptionLabel.Content = Caption[i];
         CaptionLabel.FontWeight = FontWeights.Heavy;
-        CaptionLabel.Foreground = Theme.ProcessCaptionForeground.AsBrush;
+        CaptionLabel.Foreground = Theme.ProcessCaptionForeground;
 
         var DataTextBlock = new TextBlock();
         DataTextBlock.Text = Data[i];
         //DataTextBlock.ClipToBounds = true;
         DataTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
         DataTextBlock.TextWrapping = TextWrapping.Wrap;
-        DataTextBlock.Foreground = Theme.ProcessDataForeground.AsBrush;
+        DataTextBlock.Foreground = Theme.ProcessDataForeground;
 
         var DataLabel = new Label();
         DataStackPanel.Children.Add(DataLabel);
