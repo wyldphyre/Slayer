@@ -13,6 +13,3 @@ The simplest way to setup is to pin the .exe file to your taskbase in Windows an
 ### TODO: 
 * Cover setup and use of the configuration file
 * Cover command line switches
-
-### Roadmap
-* May implement a colour theme system

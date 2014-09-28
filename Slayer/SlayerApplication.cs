@@ -16,9 +16,16 @@ namespace Slayer
 {
   class SlayerApplication
   {
+    private Application Application;
+    private string ApplicationFilePath;
+    private Configuration Configuration;
+    private SlayableConfigurationSection SlayableSection;
+    private SlayerColourThemeSection ColourThemeSection;
+
     private List<string> arguments = new List<string>();
     private Process[] ProcessesArray = null;
     private bool alwaysPreview = false;
+    private Theme Theme;
 
     public string ProcessName { get; set; }
     public List<string> Arguments { get { return arguments; } }
@@ -27,7 +34,33 @@ namespace Slayer
     {
       this.Application = new Application();
       this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-      this.SlayableSection = (SlayableConfigurationSection)ConfigurationManager.GetSection("slayableSection");
+      this.Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+      this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
+      this.ColourThemeSection = (SlayerColourThemeSection)Configuration.GetSection("slayerColourThemeSection");
+
+      Theme = ThemeHelper.Default();
+
+      // colour themes
+
+      if (ColourThemeSection != null && ColourThemeSection.Theme != "" && !ColourThemeSection.Theme.Equals("default", StringComparison.CurrentCultureIgnoreCase))
+      {
+        // load the specified theme from the list
+        SlayerColourThemeElement ColourTheme = null;
+        
+        foreach (SlayerColourThemeElement ThemeElement in ColourThemeSection.Themes)
+        {
+          if (ThemeElement.Name.Equals(ColourThemeSection.Theme, StringComparison.CurrentCultureIgnoreCase))
+          {
+            ColourTheme = ThemeElement;
+            break;
+          }
+        }
+
+        if (ColourTheme == null)
+          throw new ApplicationException(string.Format("Could not locate theme '{0}'", ColourThemeSection.Theme));
+
+        Theme = ThemeHelper.Load(ColourTheme);
+      }
     }
 
     public void Execute()
@@ -46,15 +79,35 @@ namespace Slayer
           if (argument.StartsWith("-") || argument.StartsWith("/"))
           {
             // arguments with a switch indicator character at the front are assumed to be switches
-            var switchArgument = argument.Remove(0, 1);
+            var SwitchParameter = argument.Remove(0, 1);
+            var SwitchArgument = "";
+            if (SwitchParameter.Contains(":"))
+            {
+              var Components = SwitchParameter.Split(':');
+              SwitchParameter = Components[0];
+              SwitchArgument = Components[1];
 
-            if (switchArgument.ToUpper() == "AlwaysPreview".ToUpper())
+              if (SwitchArgument == "")
+              {
+                MessageBox.Show(string.Format("The switch parameter \"{0}\" must be of the form <Switch>:<Argument>", SwitchParameter));
+                return;
+              }
+            }
+            
+            if (SwitchParameter.ToUpper() == "AlwaysPreview".ToUpper())
             {
               alwaysPreview = true;
             }
+            else if (SwitchParameter.Equals("SetTheme", StringComparison.CurrentCultureIgnoreCase))
+            {
+              ColourThemeSection.Theme = SwitchArgument;
+              Configuration.Save(ConfigurationSaveMode.Modified);
+              SetupJumpList(); //need to update the default marker next to the correct theme name.
+              return;
+            }
             else
             {
-              MessageBox.Show(String.Format("The switch parameter \"{0}\" is not recognised.", switchArgument));
+              MessageBox.Show(String.Format("The switch parameter \"{0}\" is not recognised.", SwitchParameter));
               return; // do not continue running the application if there is something wrong with the parameters
             }
           }
@@ -114,9 +167,12 @@ namespace Slayer
           var MainWindow = new Window();
           Application.MainWindow = MainWindow;
 
-          var VisualEngine = new SlayerVisualEngine(MainWindow);
-          VisualEngine.ProcessList = ProcessList;
-          VisualEngine.Application = Application;
+          var VisualEngine = new SlayerVisualEngine(MainWindow)
+          {
+            Theme = this.Theme,
+            ProcessList = ProcessList,
+            Application = Application
+          };
           VisualEngine.Install();
 
           MainWindow.Show();
@@ -129,6 +185,28 @@ namespace Slayer
     private void SetupJumpList()
     {
       var JumpList = new JumpList();
+
+      if (ColourThemeSection != null)
+      {
+        var DefaultThemeTask = new JumpTask();
+        JumpList.JumpItems.Add(DefaultThemeTask);
+        DefaultThemeTask.CustomCategory = "Theme";
+        DefaultThemeTask.Arguments = "-settheme:default";
+        DefaultThemeTask.Title = "Default";
+        if (ColourThemeSection.Theme.Equals("default", StringComparison.CurrentCultureIgnoreCase))
+          DefaultThemeTask.Title += " \u2605";//★
+
+        foreach (SlayerColourThemeElement ThemeElement in ColourThemeSection.Themes)
+        {
+          var ThemeTask = new JumpTask();
+          JumpList.JumpItems.Add(ThemeTask);
+          ThemeTask.CustomCategory = "Theme";
+          ThemeTask.Arguments = "-settheme:" + ThemeElement.Name;
+          ThemeTask.Title = ThemeElement.Name;
+          if (ColourThemeSection.Theme.Equals(ThemeElement.Name, StringComparison.CurrentCultureIgnoreCase))
+            ThemeTask.Title += " \u2605";//★
+        }
+      }
 
       if (SlayableSection != null)
       {
@@ -150,9 +228,5 @@ namespace Slayer
       // The entire JumpList is replaced each time
       JumpList.SetJumpList(Application, JumpList);
     }
-
-    private Application Application;
-    private string ApplicationFilePath;
-    private SlayableConfigurationSection SlayableSection;
   }
 }
