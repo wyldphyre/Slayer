@@ -100,9 +100,18 @@ namespace Slayer
             }
             else if (SwitchParameter.Equals("SetTheme", StringComparison.CurrentCultureIgnoreCase))
             {
+              var ConfigurationFileInfo = new FileInfo(Configuration.FilePath);
+              var IsReadOnly = ConfigurationFileInfo.IsReadOnly;
+
+              if (IsReadOnly)
+                ConfigurationFileInfo.IsReadOnly = false;
+
               ColourThemeSection.Theme = SwitchArgument;
               Configuration.Save(ConfigurationSaveMode.Modified);
               SetupJumpList(); //need to update the default marker next to the correct theme name.
+
+              if (IsReadOnly)
+                ConfigurationFileInfo.IsReadOnly = true;
               return;
             }
             else
