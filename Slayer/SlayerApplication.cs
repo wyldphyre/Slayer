@@ -65,7 +65,7 @@ namespace Slayer
 
     public void Execute()
     {
-      SetupJumpList();
+      ConfigureJumpList();
 
       if (arguments.Count > 0)
       {
@@ -108,7 +108,7 @@ namespace Slayer
 
               ColourThemeSection.Theme = SwitchArgument;
               Configuration.Save(ConfigurationSaveMode.Modified);
-              SetupJumpList(); //need to update the default marker next to the correct theme name.
+              ConfigureJumpList(); //need to update the default marker to be next to the correct theme name.
 
               if (IsReadOnly)
                 ConfigurationFileInfo.IsReadOnly = true;
@@ -123,7 +123,7 @@ namespace Slayer
           else
           {
             // arguments without switch indicator are assumed to be process names.
-            // TO DO: Currently only the last process name listed will be used.
+            // TODO: Currently only the last process name listed will be used.
             ProcessName = argument;
           }
         }
@@ -191,7 +191,7 @@ namespace Slayer
       }
     }
 
-    private void SetupJumpList()
+    private void ConfigureJumpList()
     {
       var JumpList = new JumpList();
 
