@@ -22,16 +22,15 @@ namespace Slayer
     private SlayableConfigurationSection SlayableSection;
     private SlayerColourThemeSection ColourThemeSection;
 
-    private List<string> arguments = new List<string>();
-    private Process[] ProcessesArray = null;
     private bool alwaysPreview = false;
     private Theme Theme;
 
-    public string ProcessName { get; set; }
-    public List<string> Arguments { get { return arguments; } }
+    public string ProcessName { get; private set; }
+    public List<string> Arguments { get; private set; }
 
     public SlayerApplication()
     {
+      this.Arguments = new List<string>();
       this.Application = new Application();
       this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
       this.Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -67,7 +66,7 @@ namespace Slayer
     {
       ConfigureJumpList();
 
-      if (arguments.Count > 0)
+      if (Arguments.Count > 0)
       {
         foreach (string argument in Arguments)
         {
@@ -150,7 +149,7 @@ namespace Slayer
 
       // TODO: Should the app also handle the user passing in a path instead of 'friendly' process name?
 
-      ProcessesArray = Process.GetProcessesByName(sanitisedProcessName);
+      var ProcessesArray = Process.GetProcessesByName(sanitisedProcessName);
 
       if (ProcessesArray.Length > 0)
       {
