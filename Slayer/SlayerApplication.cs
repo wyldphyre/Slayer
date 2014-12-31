@@ -32,6 +32,29 @@ namespace Slayer
     {
       this.Arguments = new List<string>();
       this.Application = new Application();
+
+      var Assembly = System.Reflection.Assembly.GetExecutingAssembly();
+      var DefaultConfigurationFileName = "Slayer.exe.Config";
+      var UserDataFolder = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+      var ApplicationDataFolder = Path.Combine(UserDataFolder, "Slayer");
+      var ConfigurationFilePath = Path.Combine(ApplicationDataFolder, DefaultConfigurationFileName);
+
+      if (!File.Exists(ConfigurationFilePath))
+      {
+        if (!Directory.Exists(ApplicationDataFolder))
+          Directory.CreateDirectory(ApplicationDataFolder);
+
+        using (var DefaultConfigurationStream = Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName))
+        using (var StreamReader = new StreamReader(DefaultConfigurationStream))
+        using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
+        {
+          FileWriter.Write(StreamReader.ReadToEnd());
+          FileWriter.Flush();
+        }        
+      }
+
+      // TODO: Load configuration from the file in the user app data folder instead of from the local folder
+
       this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
       this.Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
       this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
