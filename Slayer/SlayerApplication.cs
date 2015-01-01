@@ -2,13 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Text;
 using System.Configuration;
 using System.Diagnostics;
 using System.Windows;
-//using System.Windows.Controls;
 using System.Windows.Input;
-//using System.Windows.Media;
 using System.Windows.Shell;
 using System.IO;
 
@@ -21,6 +18,7 @@ namespace Slayer
     private Configuration Configuration;
     private SlayableConfigurationSection SlayableSection;
     private SlayerColourThemeSection ColourThemeSection;
+    private string ConfigurationFilePath;
 
     private bool alwaysPreview = false;
     private Theme Theme;
@@ -37,7 +35,7 @@ namespace Slayer
       var DefaultConfigurationFileName = "Slayer.exe.Config";
       var UserDataFolder = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
       var ApplicationDataFolder = Path.Combine(UserDataFolder, "Slayer");
-      var ConfigurationFilePath = Path.Combine(ApplicationDataFolder, DefaultConfigurationFileName);
+      this.ConfigurationFilePath = Path.Combine(ApplicationDataFolder, DefaultConfigurationFileName);
 
       if (!File.Exists(ConfigurationFilePath))
       {
@@ -53,10 +51,10 @@ namespace Slayer
         }        
       }
 
-      // TODO: Load configuration from the file in the user app data folder instead of from the local folder
-
       this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-      this.Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+      var ConfigurationMap = new ExeConfigurationFileMap();
+      ConfigurationMap.ExeConfigFilename = ConfigurationFilePath;
+      this.Configuration = ConfigurationManager.OpenMappedExeConfiguration(ConfigurationMap, ConfigurationUserLevel.None);
       this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
       this.ColourThemeSection = (SlayerColourThemeSection)Configuration.GetSection("slayerColourThemeSection");
 

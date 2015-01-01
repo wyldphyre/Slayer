@@ -11,9 +11,8 @@ The simplest way to setup is to pin the .exe file to your taskbase in Windows an
 
 
 ### TODO: 
-* Store default configuration as a resource and automatically install to the users application data folder
-* Update ReadMe on how to get started once the new configuration location code is in place
 * Add Jump Menu options to edit/locate the configuration file
+* Update ReadMe on how to get started once the new configuration location code is in place
 * Refactor code so that the user interface can be more easily replaced in the future
 * Document use of the configuration file
 * Document command line switches
