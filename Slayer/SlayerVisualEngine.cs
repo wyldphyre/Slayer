@@ -6,10 +6,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Diagnostics;
-using System.IO;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Configuration;
+//using System.Configuration;
 
 namespace Slayer
 {
@@ -28,14 +25,14 @@ namespace Slayer
       this.Window = Window;
       this.Theme = Theme;
 
-      Window.FontFamily = new FontFamily("Calibri");
+      Window.FontFamily = new System.Windows.Media.FontFamily("Calibri");
       Window.FontSize = 13;
       Window.Width = 400;
       Window.Height = 470;
       Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
       Window.KeyUp += (object sender, System.Windows.Input.KeyEventArgs Event) =>
       {
-        if (Event.Key == Key.Escape)
+        if (Event.Key == System.Windows.Input.Key.Escape)
           Window.Close();
       };
 
