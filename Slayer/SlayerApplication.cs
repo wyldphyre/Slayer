@@ -205,6 +205,27 @@ namespace Slayer
             Application = Application
           };
           VisualEngine.Install();
+          VisualEngine.KillAllEvent += () =>
+          {
+            ProcessList.ForEach(P => P.Kill());
+            Application.Shutdown();
+          };
+
+          VisualEngine.KillOldestEvent += () =>
+          {
+            var OldestProcess = ProcessList.OrderBy(P => P.StartTime).First();
+
+            OldestProcess.Kill();
+            Application.Shutdown();
+          };
+
+          VisualEngine.KillYoungestEvent += () =>
+          {
+            var YoungestProcess = ProcessList.OrderBy(P => P.StartTime).Last();
+
+            YoungestProcess.Kill();
+            Application.Shutdown();
+          };
 
           MainWindow.Show();
 

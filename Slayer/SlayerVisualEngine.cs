@@ -2,11 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Diagnostics;
-//using System.Configuration;
 
 namespace Slayer
 {
@@ -19,6 +17,9 @@ namespace Slayer
     public Theme Theme { get; set; }
     public Application Application { get; set; }
     public List<Process> ProcessList { get; set; }
+    public event Action KillAllEvent;
+    public event Action KillOldestEvent;
+    public event Action KillYoungestEvent;
 
     public SlayerVisualEngine(Window Window)
     {
@@ -49,7 +50,7 @@ namespace Slayer
 
       var AssemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
       Window.Title = String.Format("{0} v{1}", AssemblyName.Name, AssemblyName.Version.ToString().TrimEnd('.', '0'));
-      
+
       var IconUri = new Uri("pack://application:,,,/Slayer;component/Images/Close-128.ico"); // File needs to be set as a resource in it's properties
       Window.Icon = new System.Windows.Media.Imaging.BitmapImage(IconUri);
 
@@ -63,7 +64,7 @@ namespace Slayer
       DockPanel.SetDock(ButtonBorder, Dock.Bottom);
       ButtonBorder.Background = Theme.ApplicationButtonToolbarBackground;
       ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
-      
+
       var ButtonStackPanel = new StackPanel();
       ButtonBorder.Child = ButtonStackPanel;
       Grid.SetRow(ButtonStackPanel, 1);
@@ -71,56 +72,45 @@ namespace Slayer
       ButtonStackPanel.Margin = new Thickness(5);
       ButtonStackPanel.Height = 30;
       ButtonStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
-      
+
       var KillAllButton = NewButton("Kill All");
       ButtonStackPanel.Children.Add(KillAllButton);
       KillAllButton.Click += (object sender, RoutedEventArgs e) =>
       {
-        ProcessList.ForEach(Process => Process.Kill());
-        Application.Shutdown();
+        var KillAll = KillAllEvent;
+        if (KillAll != null)
+          KillAll();
       };
 
       var KillOldestButton = NewButton("Kill Oldest");
       ButtonStackPanel.Children.Add(KillOldestButton);
       KillOldestButton.Click += (object sender, RoutedEventArgs e) =>
       {
-        var OldestProcess = ProcessList.First();
-
-        foreach (Process Process in ProcessList)
-        {
-          if (Process.StartTime < OldestProcess.StartTime)
-            OldestProcess = Process;
-        }
-
-        OldestProcess.Kill();
-        Application.Shutdown();
+        var KillOldest = KillOldestEvent;
+        if (KillOldest != null)
+          KillOldest();
       };
 
       var KillYoungestButton = NewButton("Kill Youngest");
       ButtonStackPanel.Children.Add(KillYoungestButton);
       KillYoungestButton.Click += (object sender, RoutedEventArgs e) =>
       {
-        var YoungestProcess = ProcessList.First();
-
-        foreach (Process Process in ProcessList)
-        {
-          if (Process.StartTime > YoungestProcess.StartTime)
-            YoungestProcess = Process;
-        }
-
-        YoungestProcess.Kill();
-        Application.Shutdown();
+        var KillYoungest = KillYoungestEvent;
+        if (KillYoungest != null)
+          KillYoungest();
       };
 
       DockPanel.LastChildFill = true; // use to make the process border fill the window and stretch with it
       var ProcessBorder = new Border();
       DockPanel.Children.Add(ProcessBorder);
-      
-      var ProcessVisualEngine = new ProcessVisualEngine();
-      ProcessVisualEngine.Theme = Theme;
-      ProcessVisualEngine.Application = Application;
-      ProcessVisualEngine.MainBorder = ProcessBorder;
-      ProcessVisualEngine.ProcessList = ProcessList;
+
+      var ProcessVisualEngine = new ProcessVisualEngine
+      {
+        Theme = Theme,
+        Application = Application,
+        MainBorder = ProcessBorder,
+        ProcessList = ProcessList
+      };
       ProcessVisualEngine.Install();
     }
 
