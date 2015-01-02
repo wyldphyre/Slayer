@@ -14,6 +14,12 @@ using System.Runtime.InteropServices;
 
 namespace Slayer
 {
+  static class NativeMethods
+  {
+    [DllImport("user32.dll")]
+    public static extern bool SetForegroundWindow(IntPtr hWnd);
+  }
+
   class ProcessVisualEngine
   {
     private Dictionary<Button, Process> buttonProcessDictionary = new Dictionary<Button, Process>();
@@ -22,9 +28,6 @@ namespace Slayer
     public Application Application { get; set; }
     public Border MainBorder { get; set; }
     public List<Process> ProcessList { get; set; }
-
-    [DllImport("user32.dll")]
-    static extern bool SetForegroundWindow(IntPtr hWnd);
 
     private const double MinimumButtonWidth = 75;
 
@@ -80,7 +83,7 @@ namespace Slayer
           Process ButtonProcess = null;
 
           if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
-            SetForegroundWindow(ButtonProcess.MainWindowHandle);
+            NativeMethods.SetForegroundWindow(ButtonProcess.MainWindowHandle);
         };
 
         var KillMeButton = NewButton("Kill Me");

@@ -42,8 +42,7 @@ namespace Slayer
         if (!Directory.Exists(ApplicationDataFolder))
           Directory.CreateDirectory(ApplicationDataFolder);
 
-        using (var DefaultConfigurationStream = Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName))
-        using (var StreamReader = new StreamReader(DefaultConfigurationStream))
+        using (var StreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
         using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
         {
           FileWriter.Write(StreamReader.ReadToEnd());
