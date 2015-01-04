@@ -79,6 +79,7 @@ namespace Slayer
         buttonProcessDictionary.Add(ShowMeButton, process);
         ShowMeButton.Click += (Sender, Event) =>
         {
+          // TODO: This can be simplified by no longer using the dictionary
           Button ClickedButton = (Button)Sender;
           Process ButtonProcess = null;
 
@@ -91,6 +92,7 @@ namespace Slayer
         buttonProcessDictionary.Add(KillMeButton, process);
         KillMeButton.Click += (Sender, Event) =>
         {
+          // TODO: This can be simplified by no longer using the dictionary
           Button ClickedButton = (Button)Sender;
           Process ButtonProcess = null;
 
@@ -110,7 +112,7 @@ namespace Slayer
         buttonProcessDictionary.Add(KillOthersButton, process);
         KillOthersButton.Click += (Sender, Event) =>
         {
-          //kill all processes except the one associated with the sending button
+          // TODO: This can be simplified by no longer using the dictionary
 
           Button ClickedButton = (Button)Sender;
           Process ButtonProcess = null;
