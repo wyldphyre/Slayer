@@ -235,6 +235,22 @@ namespace Slayer
     {
       var JumpList = new JumpList();
 
+      var EditConfigurationLocationTask = new JumpTask();
+      JumpList.JumpItems.Add(EditConfigurationLocationTask);
+      EditConfigurationLocationTask.CustomCategory = "Configuration";
+      EditConfigurationLocationTask.Title = "Edit configuration";
+      EditConfigurationLocationTask.ApplicationPath = ConfigurationFilePath;
+      EditConfigurationLocationTask.IconResourcePath = NativeMethodHelper.AssociatedApplicationPathForExtension(NativeMethods.AssocStr.Executable, Path.GetExtension(ConfigurationFilePath));
+      
+      var OpenConfigurationFileLocationTask = new JumpTask();
+      JumpList.JumpItems.Add(OpenConfigurationFileLocationTask);
+      OpenConfigurationFileLocationTask.CustomCategory = "Configuration";
+      OpenConfigurationFileLocationTask.Title = "Open configuration location";
+      OpenConfigurationFileLocationTask.ApplicationPath = "explorer.exe";
+      OpenConfigurationFileLocationTask.Arguments = string.Format("/select,\"{0}\"", ConfigurationFilePath);
+      OpenConfigurationFileLocationTask.IconResourcePath = "explorer.exe";
+      OpenConfigurationFileLocationTask.IconResourceIndex = 0;
+
       if (ColourThemeSection != null)
       {
         var DefaultThemeTask = new JumpTask();
