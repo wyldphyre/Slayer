@@ -60,16 +60,16 @@ namespace Slayer
     {
       const int S_OK = 0;
       const int S_FALSE = 1;
-    
+
       uint length = 0;
       uint ret = NativeMethods.AssocQueryString(NativeMethods.AssocF.NoUserSettings, association, extension, null, null, ref length);
       if (ret != S_FALSE)
         throw new InvalidOperationException("Could not determine associated string");
-     
+
       var sb = new StringBuilder((int)length); // (length-1) will probably work too as the marshaller adds null termination
       ret = NativeMethods.AssocQueryString(NativeMethods.AssocF.NoUserSettings, association, extension, null, sb, ref length);
       if (ret != S_OK)
-        throw new InvalidOperationException("Could not determine associated string"); 
+        throw new InvalidOperationException("Could not determine associated string");
 
       return sb.ToString();
     }
@@ -77,8 +77,6 @@ namespace Slayer
 
   class ProcessVisualEngine
   {
-    private Dictionary<Button, Process> buttonProcessDictionary = new Dictionary<Button, Process>();
-
     public Theme Theme { get; set; }
     public Application Application { get; set; }
     public Border MainBorder { get; set; }
@@ -101,17 +99,19 @@ namespace Slayer
       Parent.Content = ProcessesStackPanel;
       ProcessesStackPanel.Margin = new Thickness(2);
 
-      foreach (Process process in ProcessList)
+      foreach (var process in ProcessList)
       {
         // build a panel to stick on MainStackPanel
-        var ProcessBorder = new Border();
+        var ProcessBorder = new Border()
+        {
+          BorderThickness = new Thickness(1, 1, 2, 2),
+          Background = Theme.ProcessBorderBackground,
+          BorderBrush = Theme.ProcessBorder,
+          Margin = new Thickness(4, 8, 8, 8),
+          Padding = new Thickness(2),
+          CornerRadius = new CornerRadius(5)
+        };
         ProcessesStackPanel.Children.Add(ProcessBorder);
-        ProcessBorder.BorderThickness = new Thickness(1, 1, 2, 2);
-        ProcessBorder.Background = Theme.ProcessBorderBackground;
-        ProcessBorder.BorderBrush = Theme.ProcessBorder;
-        ProcessBorder.Margin = new Thickness(4, 8, 8, 8);
-        ProcessBorder.Padding = new Thickness(2);
-        ProcessBorder.CornerRadius = new CornerRadius(5);
 
         var ProcessStackPanel = new StackPanel();
         ProcessBorder.Child = ProcessStackPanel;
@@ -122,87 +122,69 @@ namespace Slayer
         ProduceDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(process.TotalProcessorTime));
 
         // Buttons for the process
-        var ButtonStackPanel = new StackPanel();
+        var ButtonStackPanel = new StackPanel()
+        {
+          Orientation = Orientation.Horizontal,
+          HorizontalAlignment = HorizontalAlignment.Center,
+          FlowDirection = FlowDirection.RightToLeft,
+          Margin = new Thickness(5)
+        };
         ProcessStackPanel.Children.Add(ButtonStackPanel);
-        ButtonStackPanel.Orientation = Orientation.Horizontal;
-        ButtonStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
-        ButtonStackPanel.FlowDirection = FlowDirection.RightToLeft;
-        ButtonStackPanel.Margin = new Thickness(5);
 
         var ShowMeButton = NewButton("Show Me");
         ButtonStackPanel.Children.Add(ShowMeButton);
-        buttonProcessDictionary.Add(ShowMeButton, process);
         ShowMeButton.Click += (Sender, Event) =>
         {
-          // TODO: This can be simplified by no longer using the dictionary
-          Button ClickedButton = (Button)Sender;
-          Process ButtonProcess = null;
-
-          if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
-            NativeMethods.SetForegroundWindow(ButtonProcess.MainWindowHandle);
+          NativeMethods.SetForegroundWindow(process.MainWindowHandle);
         };
 
         var KillMeButton = NewButton("Kill Me");
         ButtonStackPanel.Children.Add(KillMeButton);
-        buttonProcessDictionary.Add(KillMeButton, process);
         KillMeButton.Click += (Sender, Event) =>
         {
-          // TODO: This can be simplified by no longer using the dictionary
-          Button ClickedButton = (Button)Sender;
-          Process ButtonProcess = null;
-
-          if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
-          {
-            ButtonProcess.Kill();
-            ProcessList.Remove(ButtonProcess);
-            Compose(Parent);
-          }
+          process.Kill();
+          ProcessList.Remove(process);
 
           if (ProcessList.Count < 1)
             Application.Shutdown();
+
+          Compose(Parent);
         };
 
         var KillOthersButton = NewButton("Kill Others");
         ButtonStackPanel.Children.Add(KillOthersButton);
-        buttonProcessDictionary.Add(KillOthersButton, process);
         KillOthersButton.Click += (Sender, Event) =>
         {
-          // TODO: This can be simplified by no longer using the dictionary
-
-          Button ClickedButton = (Button)Sender;
-          Process ButtonProcess = null;
           List<Process> KilledProcesses = new List<Process>();
 
-          if (buttonProcessDictionary.TryGetValue(ClickedButton, out ButtonProcess))
+          var KillableProcesses = ProcessList.Where(searchprocess => searchprocess != process);
+          foreach (Process killableProcess in KillableProcesses)
           {
-            var KillableProcesses = ProcessList.Where(searchprocess => searchprocess != ButtonProcess);
-            foreach (Process killableProcess in KillableProcesses)
-            {
-              killableProcess.Kill();
-              KilledProcesses.Add(killableProcess);
-            };
+            killableProcess.Kill();
+            KilledProcesses.Add(killableProcess);
+          };
 
-            foreach (Process KilledProcess in KilledProcesses)
-              ProcessList.Remove(KilledProcess);
+          foreach (Process KilledProcess in KilledProcesses)
+            ProcessList.Remove(KilledProcess);
 
-            Compose(Parent);
-          }
+          Compose(Parent);
         };
       }
     }
 
     private Button NewButton(string Caption)
     {
-      var Result = new Button();
-      Result.Content = Caption;
-      Result.Background = Theme.ProcessButtonBackground;
-      Result.BorderBrush = Theme.ProcessButtonBorder;
-      Result.Margin = new Thickness(0, 0, 7, 0);
-      Result.Padding = new Thickness(5);
-      Result.Foreground = Theme.ProcessButtonForeground;
-      Result.FontSize = 15;
-      Result.MinWidth = MinimumButtonWidth;
-
+      var Result = new Button()
+      {
+        Content = Caption,
+        Background = Theme.ProcessButtonBackground,
+        BorderBrush = Theme.ProcessButtonBorder,
+        Margin = new Thickness(0, 0, 7, 0),
+        Padding = new Thickness(5),
+        Foreground = Theme.ProcessButtonForeground,
+        FontSize = 15,
+        MinWidth = MinimumButtonWidth
+      };
       return Result;
     }
     private string TimeSpanAsWords(TimeSpan TimeSpan)
@@ -248,13 +230,15 @@ namespace Slayer
     }
     private void ProduceHeader(StackPanel Parent, string Heading)
     {
-      var HeadingLabel = new Label();
+      var HeadingLabel = new Label()
+      {
+        Content = Heading,
+        FontWeight = FontWeights.Bold,
+        FontSize = 18,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        Foreground = Theme.ProcessHeadingForeground
+      };
       Parent.Children.Add(HeadingLabel);
-      HeadingLabel.Content = Heading;
-      HeadingLabel.FontWeight = FontWeights.Bold;
-      HeadingLabel.FontSize = 18;
-      HeadingLabel.HorizontalAlignment = HorizontalAlignment.Center;
-      HeadingLabel.Foreground = Theme.ProcessHeadingForeground;
     }
     private void ProduceDataRow(StackPanel Parent, string Caption, string Data)
     {
@@ -264,10 +248,12 @@ namespace Slayer
     {
       Debug.Assert(Caption.Length == Data.Length, "Caption array and Data array must have the same length");
 
-      var RowStackPanel = new StackPanel();
+      var RowStackPanel = new StackPanel()
+      {
+        Orientation = Orientation.Horizontal,
+        HorizontalAlignment = HorizontalAlignment.Stretch
+      };
       Parent.Children.Add(RowStackPanel);
-      RowStackPanel.Orientation = Orientation.Horizontal;
-      RowStackPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
       for (int i = 0; i < Caption.Length; i++)
       {
@@ -275,29 +261,33 @@ namespace Slayer
         RowStackPanel.Children.Add(DataStackPanel);
         DataStackPanel.Orientation = Orientation.Horizontal;
 
-        var CaptionLabel = new Label();
+        var CaptionLabel = new Label()
+        {
+          Content = Caption[i],
+          FontWeight = FontWeights.Heavy,
+          Foreground = Theme.ProcessCaptionForeground
+        };
         DataStackPanel.Children.Add(CaptionLabel);
-        CaptionLabel.Content = Caption[i];
-        CaptionLabel.FontWeight = FontWeights.Heavy;
-        CaptionLabel.Foreground = Theme.ProcessCaptionForeground;
 
-        var DataTextBlock = new TextBlock();
-        DataTextBlock.Text = Data[i];
-        //DataTextBlock.ClipToBounds = true;
-        DataTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
-        DataTextBlock.TextWrapping = TextWrapping.Wrap;
-        DataTextBlock.Foreground = Theme.ProcessDataForeground;
+        var DataTextBlock = new TextBlock()
+        {
+          Text = Data[i],
+          TextTrimming = TextTrimming.CharacterEllipsis,
+          TextWrapping = TextWrapping.Wrap,
+          Foreground = Theme.ProcessDataForeground
+        };
 
         var DataLabel = new Label();
         DataStackPanel.Children.Add(DataLabel);
         DataLabel.Content = DataTextBlock;
-        //DataLabel.ClipToBounds = true;
 
-        var DataToolTip = new ToolTip();
+        var DataToolTip = new ToolTip()
+        {
+          PlacementTarget = DataLabel,
+          Placement = System.Windows.Controls.Primitives.PlacementMode.RelativePoint,
+          Content = Data[i]
+        };
         DataLabel.ToolTip = DataToolTip;
-        DataToolTip.PlacementTarget = DataLabel;
-        DataToolTip.Placement = System.Windows.Controls.Primitives.PlacementMode.RelativePoint;
-        DataToolTip.Content = Data[i];
       }
     }
   }

@@ -65,13 +65,15 @@ namespace Slayer
       ButtonBorder.Background = Theme.ApplicationButtonToolbarBackground;
       ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
 
-      var ButtonStackPanel = new StackPanel();
+      var ButtonStackPanel = new StackPanel()
+      {
+        Orientation = Orientation.Horizontal,
+        Margin = new Thickness(5),
+        Height = 30,
+        HorizontalAlignment = HorizontalAlignment.Center
+      };
       ButtonBorder.Child = ButtonStackPanel;
       Grid.SetRow(ButtonStackPanel, 1);
-      ButtonStackPanel.Orientation = Orientation.Horizontal;
-      ButtonStackPanel.Margin = new Thickness(5);
-      ButtonStackPanel.Height = 30;
-      ButtonStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
 
       var KillAllButton = NewButton("Kill All");
       ButtonStackPanel.Children.Add(KillAllButton);
@@ -116,16 +118,18 @@ namespace Slayer
 
     private Button NewButton(string Caption)
     {
-      var Result = new Button();
-      Result.Content = Caption;
-      Result.VerticalAlignment = VerticalAlignment.Bottom;
-      Result.Margin = new Thickness(0, 0, 7, 0);
-      Result.Padding = new Thickness(5);
-      Result.BorderBrush = Theme.ApplicationButtonBorder;
-      Result.Background = Theme.ApplicationButtonBackground;
-      Result.Foreground = Theme.ApplicationButtonForeground;
-      Result.FontSize = 15;
-      Result.MinWidth = MinimumButtonWidth;
+      var Result = new Button()
+      {
+        Content = Caption,
+        VerticalAlignment = VerticalAlignment.Bottom,
+        Margin = new Thickness(0, 0, 7, 0),
+        Padding = new Thickness(5),
+        BorderBrush = Theme.ApplicationButtonBorder,
+        Background = Theme.ApplicationButtonBackground,
+        Foreground = Theme.ApplicationButtonForeground,
+        FontSize = 15,
+        MinWidth = MinimumButtonWidth
+      };
 
       return Result;
     }
