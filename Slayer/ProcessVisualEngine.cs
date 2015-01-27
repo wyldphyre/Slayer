@@ -82,21 +82,22 @@ namespace Slayer
     public Border MainBorder { get; set; }
     public List<Process> ProcessList { get; set; }
 
-    private const double MinimumButtonWidth = 75;
+    private const double MinimumProcessButtonWidth = 75;
+    private ScrollViewer ProcessesScrollViewer;
 
     public void Install()
     {
-      var ProcessesScrollViewer = new ScrollViewer();
+      this.ProcessesScrollViewer = new ScrollViewer();
       MainBorder.Child = ProcessesScrollViewer;
       ProcessesScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-      Compose(ProcessesScrollViewer);
+      ComposeProcesses();
     }
 
-    private void Compose(ScrollViewer Parent)
+    private void ComposeProcesses()
     {
       var ProcessesStackPanel = new StackPanel();
-      Parent.Content = ProcessesStackPanel;
+      ProcessesScrollViewer.Content = ProcessesStackPanel;
       ProcessesStackPanel.Margin = new Thickness(2);
 
       foreach (var process in ProcessList)
@@ -116,10 +117,11 @@ namespace Slayer
         var ProcessStackPanel = new StackPanel();
         ProcessBorder.Child = ProcessStackPanel;
 
-        ProduceHeader(ProcessStackPanel, process.ProcessName);
-        ProduceDataRow(ProcessStackPanel, "Main Window Title", process.MainWindowTitle);
-        ProduceDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", process.WorkingSet64 / (1024 * 1024)), process.Id.ToString() });
-        ProduceDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(process.TotalProcessorTime));
+        ProduceProcessHeader(ProcessStackPanel, process.ProcessName);
+        ProduceProcessDataRow(ProcessStackPanel, "Main Window Title", process.MainWindowTitle);
+        //ProduceDataRow(ProcessStackPanel, "Started", string.Format("{0} ago", DateTime.Now - TimeSpanAsWords(process.StartTime)));
+        ProduceProcessDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", process.WorkingSet64 / (1024 * 1024)), process.Id.ToString() });
+        ProduceProcessDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(process.TotalProcessorTime));
 
         // Buttons for the process
         var ButtonStackPanel = new StackPanel()
@@ -131,14 +133,14 @@ namespace Slayer
         };
         ProcessStackPanel.Children.Add(ButtonStackPanel);
 
-        var ShowMeButton = NewButton("Show Me");
+        var ShowMeButton = NewProcessButton("Show Me");
         ButtonStackPanel.Children.Add(ShowMeButton);
         ShowMeButton.Click += (Sender, Event) =>
         {
           NativeMethods.SetForegroundWindow(process.MainWindowHandle);
         };
 
-        var KillMeButton = NewButton("Kill Me");
+        var KillMeButton = NewProcessButton("Kill Me");
         ButtonStackPanel.Children.Add(KillMeButton);
         KillMeButton.Click += (Sender, Event) =>
         {
@@ -148,31 +150,30 @@ namespace Slayer
           if (ProcessList.Count < 1)
             Application.Shutdown();
 
-          Compose(Parent);
+          ComposeProcesses();
         };
 
-        var KillOthersButton = NewButton("Kill Others");
+        var KillOthersButton = NewProcessButton("Kill Others");
         ButtonStackPanel.Children.Add(KillOthersButton);
         KillOthersButton.Click += (Sender, Event) =>
         {
           List<Process> KilledProcesses = new List<Process>();
 
-          var KillableProcesses = ProcessList.Where(searchprocess => searchprocess != process);
-          foreach (Process killableProcess in KillableProcesses)
+          foreach (Process KillableProcess in ProcessList.Where(searchprocess => searchprocess != process))
           {
-            killableProcess.Kill();
-            KilledProcesses.Add(killableProcess);
+            KillableProcess.Kill();
+            KilledProcesses.Add(KillableProcess);
           };
 
           foreach (Process KilledProcess in KilledProcesses)
             ProcessList.Remove(KilledProcess);
 
-          Compose(Parent);
+          ComposeProcesses();
         };
       }
     }
 
-    private Button NewButton(string Caption)
+    private Button NewProcessButton(string Caption)
     {
       var Result = new Button()
       {
@@ -183,7 +184,7 @@ namespace Slayer
         Padding = new Thickness(5),
         Foreground = Theme.ProcessButtonForeground,
         FontSize = 15,
-        MinWidth = MinimumButtonWidth
+        MinWidth = MinimumProcessButtonWidth
       };
       return Result;
     }
@@ -228,7 +229,7 @@ namespace Slayer
 
       return Result.ToString();
     }
-    private void ProduceHeader(StackPanel Parent, string Heading)
+    private void ProduceProcessHeader(StackPanel Parent, string Heading)
     {
       var HeadingLabel = new Label()
       {
@@ -240,11 +241,11 @@ namespace Slayer
       };
       Parent.Children.Add(HeadingLabel);
     }
-    private void ProduceDataRow(StackPanel Parent, string Caption, string Data)
+    private void ProduceProcessDataRow(StackPanel Parent, string Caption, string Data)
     {
-      ProduceDataRow(Parent, new string[] { Caption }, new string[] { Data });
+      ProduceProcessDataRow(Parent, new string[] { Caption }, new string[] { Data });
     }
-    private void ProduceDataRow(StackPanel Parent, string[] Caption, string[] Data)
+    private void ProduceProcessDataRow(StackPanel Parent, string[] Caption, string[] Data)
     {
       Debug.Assert(Caption.Length == Data.Length, "Caption array and Data array must have the same length");
 
