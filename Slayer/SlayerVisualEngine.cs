@@ -6,71 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Diagnostics;
 using System.Text;
-using System.Runtime.InteropServices;
 
 namespace Slayer
 {
-  static class NativeMethods
-  {
-    [Flags]
-
-    public enum AssocF
-    {
-      Init_NoRemapCLSID = 0x1,
-      Init_ByExeName = 0x2,
-      Open_ByExeName = 0x2,
-      Init_DefaultToStar = 0x4,
-      Init_DefaultToFolder = 0x8,
-      NoUserSettings = 0x10,
-      NoTruncate = 0x20,
-      Verify = 0x40,
-      RemapRunDll = 0x80,
-      NoFixUps = 0x100,
-      IgnoreBaseClass = 0x200
-    }
-
-    public enum AssocStr
-    {
-      Command = 1,
-      Executable,
-      FriendlyDocName,
-      FriendlyAppName,
-      NoOpen,
-      ShellNewValue,
-      DDECommand,
-      DDEIfExec,
-      DDEApplication,
-      DDETopic
-    }
-
-    [DllImport("user32.dll")]
-    public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-    [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
-    public static extern uint AssocQueryString(AssocF flags, AssocStr str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, ref uint pcchOut);
-  }
-
-  static class NativeMethodHelper
-  {
-    public static string AssociatedApplicationPathForExtension(NativeMethods.AssocStr association, string extension)
-    {
-      const int S_OK = 0;
-      const int S_FALSE = 1;
-
-      uint length = 0;
-      uint ret = NativeMethods.AssocQueryString(NativeMethods.AssocF.NoUserSettings, association, extension, null, null, ref length);
-      if (ret != S_FALSE)
-        throw new InvalidOperationException("Could not determine associated string");
-
-      var sb = new StringBuilder((int)length); // (length-1) will probably work too as the marshaller adds null termination
-      ret = NativeMethods.AssocQueryString(NativeMethods.AssocF.NoUserSettings, association, extension, null, sb, ref length);
-      if (ret != S_OK)
-        throw new InvalidOperationException("Could not determine associated string");
-
-      return sb.ToString();
-    }
-  }
-
   class SlayerVisualEngine
   {
     private const double MinimumButtonWidth = 70;
@@ -86,6 +24,9 @@ namespace Slayer
     public event Action KillAllEvent;
     public event Action KillOldestEvent;
     public event Action KillYoungestEvent;
+    public event Action<Process> ProcessShowMeEvent;
+    public event Action<Process> ProcessKillMeEvent;
+    public event Action<Process> ProcessKillOthersEvent;
 
     public SlayerVisualEngine(Window Window)
     {
@@ -185,7 +126,7 @@ namespace Slayer
       ProcessesScrollViewer.Content = ProcessesStackPanel;
       ProcessesStackPanel.Margin = new Thickness(2);
 
-      foreach (var process in ProcessList)
+      foreach (var Process in ProcessList)
       {
         // build a panel to stick on MainStackPanel
         var ProcessBorder = new Border()
@@ -202,11 +143,11 @@ namespace Slayer
         var ProcessStackPanel = new StackPanel();
         ProcessBorder.Child = ProcessStackPanel;
 
-        ProduceProcessHeader(ProcessStackPanel, process.ProcessName);
-        ProduceProcessDataRow(ProcessStackPanel, "Main Window Title", process.MainWindowTitle);
+        ProduceProcessHeader(ProcessStackPanel, Process.ProcessName);
+        ProduceProcessDataRow(ProcessStackPanel, "Main Window Title", Process.MainWindowTitle);
         //ProduceDataRow(ProcessStackPanel, "Started", string.Format("{0} ago", DateTime.Now - TimeSpanAsWords(process.StartTime)));
-        ProduceProcessDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", process.WorkingSet64 / (1024 * 1024)), process.Id.ToString() });
-        ProduceProcessDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(process.TotalProcessorTime));
+        ProduceProcessDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", Process.WorkingSet64 / (1024 * 1024)), Process.Id.ToString() });
+        ProduceProcessDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(Process.TotalProcessorTime));
 
         // Buttons for the process
         var ButtonStackPanel = new StackPanel()
@@ -222,38 +163,30 @@ namespace Slayer
         ButtonStackPanel.Children.Add(ShowMeButton);
         ShowMeButton.Click += (Sender, Event) =>
         {
-          NativeMethods.SetForegroundWindow(process.MainWindowHandle);
+          if (ProcessShowMeEvent != null)
+            ProcessShowMeEvent(Process);
         };
 
         var KillMeButton = NewProcessButton("Kill Me");
         ButtonStackPanel.Children.Add(KillMeButton);
         KillMeButton.Click += (Sender, Event) =>
         {
-          process.Kill();
-          ProcessList.Remove(process);
-
-          if (ProcessList.Count < 1)
-            Application.Shutdown();
-
-          ComposeProcesses();
+          if (ProcessKillMeEvent != null)
+          {
+            ProcessKillMeEvent(Process);
+            ComposeProcesses();
+          }
         };
 
         var KillOthersButton = NewProcessButton("Kill Others");
         ButtonStackPanel.Children.Add(KillOthersButton);
         KillOthersButton.Click += (Sender, Event) =>
         {
-          List<Process> KilledProcesses = new List<Process>();
-
-          foreach (Process KillableProcess in ProcessList.Where(searchprocess => searchprocess != process))
+          if (ProcessKillOthersEvent != null)
           {
-            KillableProcess.Kill();
-            KilledProcesses.Add(KillableProcess);
-          };
-
-          foreach (Process KilledProcess in KilledProcesses)
-            ProcessList.Remove(KilledProcess);
-
-          ComposeProcesses();
+            ProcessKillOthersEvent(Process);
+            ComposeProcesses();
+          }
         };
       }
     }
