@@ -255,13 +255,13 @@ namespace Slayer
           var MainWindow = new Window();
           Application.MainWindow = MainWindow;
 
-          var VisualEngine = new SlayerVisualEngine(MainWindow)
+          var VisualEngine = new SlayerVisualEngine()
           {
             Theme = this.Theme,
             ProcessList = ProcessList,
             Application = Application
           };
-          VisualEngine.Install();
+          VisualEngine.Install(MainWindow);
           VisualEngine.KillAllEvent += () =>
           {
             ProcessList.ForEach(P => P.Kill());

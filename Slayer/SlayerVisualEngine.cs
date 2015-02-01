@@ -9,7 +9,20 @@ using System.Text;
 
 namespace Slayer
 {
-  class SlayerVisualEngine
+  interface ISlayerVisualEngine
+  {
+    Application Application { get; set; }
+    List<Process> ProcessList { get; set; }
+    event Action KillAllEvent;
+    event Action KillOldestEvent;
+    event Action KillYoungestEvent;
+    event Action<Process> ProcessShowMeEvent;
+    event Action<Process> ProcessKillMeEvent;
+    event Action<Process> ProcessKillOthersEvent;
+    void Install(Window Window);
+  }
+
+  class SlayerVisualEngine : ISlayerVisualEngine
   {
     private const double MinimumButtonWidth = 70;
     private const double MinimumProcessButtonWidth = 75;
@@ -28,10 +41,13 @@ namespace Slayer
     public event Action<Process> ProcessKillMeEvent;
     public event Action<Process> ProcessKillOthersEvent;
 
-    public SlayerVisualEngine(Window Window)
+    public SlayerVisualEngine()
+    {
+    }
+
+    public void Install(Window Window)
     {
       this.Window = Window;
-      this.Theme = Theme;
 
       Window.FontFamily = new System.Windows.Media.FontFamily("Calibri");
       Window.FontSize = 13;
@@ -47,10 +63,6 @@ namespace Slayer
       MainBorder = new Border();
       Window.Content = MainBorder;
       MainBorder.Padding = new Thickness(4);
-    }
-
-    public void Install()
-    {
       MainBorder.Background = Theme.ApplicationBackground;
 
       ProcessList.Sort(SortByStartTime);
@@ -146,7 +158,6 @@ namespace Slayer
         ProduceProcessHeader(ProcessStackPanel, Process.ProcessName);
         ProduceProcessDataRow(ProcessStackPanel, "Main Window Title", Process.MainWindowTitle);
         ProduceProcessDataRow(ProcessStackPanel, "Started", TimeSpanAsWords(DateTime.Now - Process.StartTime) + " ago");
-        //ProduceDataRow(ProcessStackPanel, "Started", string.Format("{0} ago", DateTime.Now - TimeSpanAsWords(process.StartTime)));
         ProduceProcessDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", Process.WorkingSet64 / (1024 * 1024)), Process.Id.ToString() });
         ProduceProcessDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(Process.TotalProcessorTime));
 
