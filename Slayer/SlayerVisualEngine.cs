@@ -145,6 +145,7 @@ namespace Slayer
 
         ProduceProcessHeader(ProcessStackPanel, Process.ProcessName);
         ProduceProcessDataRow(ProcessStackPanel, "Main Window Title", Process.MainWindowTitle);
+        ProduceProcessDataRow(ProcessStackPanel, "Started", TimeSpanAsWords(DateTime.Now - Process.StartTime) + " ago");
         //ProduceDataRow(ProcessStackPanel, "Started", string.Format("{0} ago", DateTime.Now - TimeSpanAsWords(process.StartTime)));
         ProduceProcessDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", Process.WorkingSet64 / (1024 * 1024)), Process.Id.ToString() });
         ProduceProcessDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(Process.TotalProcessorTime));
