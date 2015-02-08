@@ -114,7 +114,10 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <EmbeddedResource Include="Slayer.exe.Config" />
+    <EmbeddedResource Include="Slayer.exe.Config">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Slayer_v1.exe.Config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Close-128.png" />

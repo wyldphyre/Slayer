@@ -10,6 +10,7 @@ using System.Windows.Shell;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace Slayer
 {
@@ -80,7 +81,6 @@ namespace Slayer
     private string ApplicationFilePath;
     private Configuration Configuration;
     private SlayableConfigurationSection SlayableSection;
-    private SlayerColourThemeSection ColourThemeSection;
     private string ConfigurationFilePath;
 
     private bool AlwaysPreview = false;
@@ -96,6 +96,7 @@ namespace Slayer
 
       var Assembly = System.Reflection.Assembly.GetExecutingAssembly();
       var DefaultConfigurationFileName = "Slayer.exe.Config";
+      var v1ConfigurationFileName = "Slayer_v1.exe.Config";
       var UserDataFolder = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
       var ApplicationDataFolder = Path.Combine(UserDataFolder, "Slayer");
       this.ConfigurationFilePath = Path.Combine(ApplicationDataFolder, DefaultConfigurationFileName);
@@ -110,7 +111,32 @@ namespace Slayer
         {
           FileWriter.Write(StreamReader.ReadToEnd());
           FileWriter.Flush();
-        }        
+        }
+      } else
+      {
+        var ReplaceConfigFile = false;
+
+        using (var v1ConfigStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + v1ConfigurationFileName)))
+        using (var LocalConfigStreamReader = new StreamReader(ConfigurationFilePath))
+        {
+          var Sha1 = new SHA1CryptoServiceProvider();
+          var v1Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v1ConfigStreamReader.ReadToEnd())));
+          var LocalHash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(LocalConfigStreamReader.ReadToEnd())));
+          
+          ReplaceConfigFile = LocalHash == v1Hash;
+        }
+
+        if (ReplaceConfigFile)
+        {
+          File.Delete(ConfigurationFilePath);
+
+          using (var CurrentStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
+          using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
+          {
+            FileWriter.Write(CurrentStreamReader.ReadToEnd());
+            FileWriter.Flush();
+          }
+        }
       }
 
       this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
@@ -118,31 +144,8 @@ namespace Slayer
       ConfigurationMap.ExeConfigFilename = ConfigurationFilePath;
       this.Configuration = ConfigurationManager.OpenMappedExeConfiguration(ConfigurationMap, ConfigurationUserLevel.None);
       this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
-      this.ColourThemeSection = (SlayerColourThemeSection)Configuration.GetSection("slayerColourThemeSection");
-
+    
       Theme = ThemeHelper.Default();
-
-      // colour themes
-
-      if (ColourThemeSection != null && ColourThemeSection.Theme != "" && !ColourThemeSection.Theme.Equals("default", StringComparison.CurrentCultureIgnoreCase))
-      {
-        // load the specified theme from the list
-        SlayerColourThemeElement ColourTheme = null;
-        
-        foreach (SlayerColourThemeElement ThemeElement in ColourThemeSection.Themes)
-        {
-          if (ThemeElement.Name.Equals(ColourThemeSection.Theme, StringComparison.CurrentCultureIgnoreCase))
-          {
-            ColourTheme = ThemeElement;
-            break;
-          }
-        }
-
-        if (ColourTheme == null)
-          throw new ApplicationException(string.Format("Could not locate theme '{0}'", ColourThemeSection.Theme));
-
-        Theme = ThemeHelper.Load(ColourTheme);
-      }
     }
 
     public void Execute()
@@ -179,22 +182,6 @@ namespace Slayer
             if (SwitchParameter.ToUpper() == "AlwaysPreview".ToUpper())
             {
               AlwaysPreview = true;
-            }
-            else if (SwitchParameter.Equals("SetTheme", StringComparison.CurrentCultureIgnoreCase))
-            {
-              var ConfigurationFileInfo = new FileInfo(Configuration.FilePath);
-              var IsReadOnly = ConfigurationFileInfo.IsReadOnly;
-
-              if (IsReadOnly)
-                ConfigurationFileInfo.IsReadOnly = false;
-
-              ColourThemeSection.Theme = SwitchArgument;
-              Configuration.Save(ConfigurationSaveMode.Modified);
-              ConfigureJumpList(); //need to update the default marker to be next to the correct theme name.
-
-              if (IsReadOnly)
-                ConfigurationFileInfo.IsReadOnly = true;
-              return;
             }
             else
             {
@@ -333,28 +320,6 @@ namespace Slayer
       OpenConfigurationFileLocationTask.Arguments = string.Format("/select,\"{0}\"", ConfigurationFilePath);
       OpenConfigurationFileLocationTask.IconResourcePath = "explorer.exe";
       OpenConfigurationFileLocationTask.IconResourceIndex = 0;
-
-      if (ColourThemeSection != null)
-      {
-        var DefaultThemeTask = new JumpTask();
-        JumpList.JumpItems.Add(DefaultThemeTask);
-        DefaultThemeTask.CustomCategory = "Theme";
-        DefaultThemeTask.Arguments = "-settheme:default";
-        DefaultThemeTask.Title = "Default";
-        if (ColourThemeSection.Theme.Equals("default", StringComparison.CurrentCultureIgnoreCase))
-          DefaultThemeTask.Title += " \u2605";//★
-
-        foreach (SlayerColourThemeElement ThemeElement in ColourThemeSection.Themes)
-        {
-          var ThemeTask = new JumpTask();
-          JumpList.JumpItems.Add(ThemeTask);
-          ThemeTask.CustomCategory = "Theme";
-          ThemeTask.Arguments = "-settheme:" + ThemeElement.Name;
-          ThemeTask.Title = ThemeElement.Name;
-          if (ColourThemeSection.Theme.Equals(ThemeElement.Name, StringComparison.CurrentCultureIgnoreCase))
-            ThemeTask.Title += " \u2605";//★
-        }
-      }
 
       if (SlayableSection != null)
       {
