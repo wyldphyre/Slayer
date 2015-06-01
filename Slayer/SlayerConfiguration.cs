@@ -57,6 +57,7 @@ namespace Slayer
 
   sealed class Theme
   {
+    public Brush ApplicationProcessNameHeaderBackground { get; set; }
     public Brush ApplicationBackground { get;  set; }
     public Brush ApplicationButtonBorder { get;  set; }
     public Brush ApplicationButtonToolbarBackground { get; set; }
@@ -78,6 +79,7 @@ namespace Slayer
     {
       return new Theme
       {
+        ApplicationProcessNameHeaderBackground = Brushes.DarkGray,
         ApplicationBackground = Brushes.White,
         ApplicationButtonBorder = Brushes.DarkGray,
         ApplicationButtonBackground = Brushes.WhiteSmoke,

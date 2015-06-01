@@ -118,6 +118,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Slayer_v1.exe.Config" />
+    <EmbeddedResource Include="Slayer_v2.exe.Config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Close-128.png" />

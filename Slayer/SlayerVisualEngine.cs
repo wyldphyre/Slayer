@@ -78,6 +78,20 @@ namespace Slayer
       DockPanel.LastChildFill = false;
       DockPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
+      var ProcessNameBorder = new Border();
+      DockPanel.Children.Add(ProcessNameBorder);
+      DockPanel.SetDock(ProcessNameBorder, Dock.Top);
+      ProcessNameBorder.Background = Theme.ApplicationButtonToolbarBackground;
+
+      var ProcessNameCaption = new Label
+      {
+        Content = ProcessList.First().ProcessName,
+        HorizontalAlignment = HorizontalAlignment.Center,
+        FontSize = 20,
+        FontWeight = FontWeights.Bold
+      };
+      ProcessNameBorder.Child = ProcessNameCaption;
+
       var ButtonBorder = new Border();
       DockPanel.Children.Add(ButtonBorder);
       DockPanel.SetDock(ButtonBorder, Dock.Bottom);
@@ -155,7 +169,6 @@ namespace Slayer
         var ProcessStackPanel = new StackPanel();
         ProcessBorder.Child = ProcessStackPanel;
 
-        ProduceProcessHeader(ProcessStackPanel, Process.ProcessName);
         ProduceProcessDataRow(ProcessStackPanel, "Main Window Title", Process.MainWindowTitle);
         ProduceProcessDataRow(ProcessStackPanel, "Started", TimeSpanAsWords(DateTime.Now - Process.StartTime) + " ago");
         ProduceProcessDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", Process.WorkingSet64 / (1024 * 1024)), Process.Id.ToString() });
@@ -292,18 +305,6 @@ namespace Slayer
       }
 
       return Result.ToString();
-    }
-    private void ProduceProcessHeader(StackPanel Parent, string Heading)
-    {
-      var HeadingLabel = new Label()
-      {
-        Content = Heading,
-        FontWeight = FontWeights.Bold,
-        FontSize = 18,
-        HorizontalAlignment = HorizontalAlignment.Center,
-        Foreground = Theme.ProcessHeadingForeground
-      };
-      Parent.Children.Add(HeadingLabel);
     }
     private void ProduceProcessDataRow(StackPanel Parent, string Caption, string Data)
     {
