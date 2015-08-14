@@ -85,7 +85,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ProcessVisualEngine.cs" />
     <Compile Include="SlayerConfiguration.cs" />
     <Compile Include="SlayerVisualEngine.cs" />
     <Compile Include="Program.cs" />
@@ -115,6 +114,11 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <EmbeddedResource Include="Slayer.exe.Config">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Slayer_v1.exe.Config" />
+    <EmbeddedResource Include="Slayer_v2.exe.Config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Close-128.png" />

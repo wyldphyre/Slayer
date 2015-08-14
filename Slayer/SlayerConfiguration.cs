@@ -55,109 +55,9 @@ namespace Slayer
     }
   }
 
-  class SlayerColourThemeSection : ConfigurationSection
-  {
-    [ConfigurationProperty("theme", IsKey = true, IsRequired = false)]
-    public string Theme
-    {
-      get { return (string)this["theme"]; }
-      set { this["theme"] = value; }
-    }
-    [ConfigurationProperty("themes")]
-    public SlayerColourThemeElementCollection Themes
-    {
-      get { return (SlayerColourThemeElementCollection)this["themes"]; }
-    }
-  }
-  class SlayerColourThemeElementCollection : ConfigurationElementCollection
-  {
-    protected override ConfigurationElement CreateNewElement()
-    {
-      return new SlayerColourThemeElement();
-    }
-
-    protected override object GetElementKey(ConfigurationElement element)
-    {
-      return ((SlayerColourThemeElement)element).Name;
-    }
-  }
-
-  class SlayerColourThemeElement : ConfigurationElement
-  {
-    [ConfigurationProperty("Name", IsKey = true, IsRequired = true)]
-    public string Name
-    {
-      get { return (string)this["Name"]; }
-    }
-    [ConfigurationProperty("ApplicationBackground", IsKey = true, IsRequired = false)]
-    public string ApplicationBackground
-    {
-      get { return (string)this["ApplicationBackground"]; }
-    }
-    [ConfigurationProperty("ApplicationButtonToolbarBackground", IsKey = true, IsRequired = false)]
-    public string ApplicationButtonToolbarBackground
-    {
-      get { return (string)this["ApplicationButtonToolbarBackground"]; }
-    }
-    [ConfigurationProperty("ApplicationButtonBorder", IsKey = true, IsRequired = false)]
-    public string ApplicationButtonBorder
-    {
-      get { return (string)this["ApplicationButtonBorder"]; }
-    }
-    [ConfigurationProperty("ApplicationButtonBackground", IsKey = true, IsRequired = false)]
-    public string ApplicationButtonBackground
-    {
-      get { return (string)this["ApplicationButtonBackground"]; }
-    }
-    [ConfigurationProperty("ApplicationButtonForeground", IsKey = true, IsRequired = false)]
-    public string ApplicationButtonForeground
-    {
-      get { return (string)this["ApplicationButtonForeground"]; }
-    }
-    [ConfigurationProperty("ProcessHeadingForeground", IsKey = true, IsRequired = false)]
-    public string ProcessHeadingForeground
-    {
-      get { return (string)this["ProcessHeadingForeground"]; }
-    }
-    [ConfigurationProperty("ProcessBorderBackground", IsKey = true, IsRequired = false)]
-    public string ProcessBorderBackground
-    {
-      get { return (string)this["ProcessBorderBackground"]; }
-    }
-    [ConfigurationProperty("ProcessBorder", IsKey = true, IsRequired = false)]
-    public string ProcessBorder
-    {
-      get { return (string)this["ProcessBorder"]; }
-    }
-    [ConfigurationProperty("ProcessButtonBorder", IsKey = true, IsRequired = false)]
-    public string ProcessButtonBorder
-    {
-      get { return (string)this["ProcessButtonBorder"]; }
-    }
-    [ConfigurationProperty("ProcessButtonBackground", IsKey = true, IsRequired = false)]
-    public string ProcessButtonBackground
-    {
-      get { return (string)this["ProcessButtonBackground"]; }
-    }
-    [ConfigurationProperty("ProcessButtonForeground", IsKey = true, IsRequired = false)]
-    public string ProcessButtonForeground
-    {
-      get { return (string)this["ProcessButtonForeground"]; }
-    }
-    [ConfigurationProperty("ProcessCaptionForeground", IsKey = true, IsRequired = false)]
-    public string ProcessCaptionForeground
-    {
-      get { return (string)this["ProcessCaptionForeground"]; }
-    }
-    [ConfigurationProperty("ProcessDataForeground", IsKey = true, IsRequired = false)]
-    public string ProcessDataForeground
-    {
-      get { return (string)this["ProcessDataForeground"]; }
-    }
-  }
-
   sealed class Theme
   {
+    public Brush ApplicationProcessNameHeaderBackground { get; set; }
     public Brush ApplicationBackground { get;  set; }
     public Brush ApplicationButtonBorder { get;  set; }
     public Brush ApplicationButtonToolbarBackground { get; set; }
@@ -179,6 +79,7 @@ namespace Slayer
     {
       return new Theme
       {
+        ApplicationProcessNameHeaderBackground = Brushes.DarkGray,
         ApplicationBackground = Brushes.White,
         ApplicationButtonBorder = Brushes.DarkGray,
         ApplicationButtonBackground = Brushes.WhiteSmoke,
@@ -192,52 +93,6 @@ namespace Slayer
         ProcessCaptionForeground = Brushes.Black,
         ProcessDataForeground = Brushes.Black
       };
-    }
-    public static Theme Load(SlayerColourThemeElement ThemeElement)
-    {
-      var Theme = new Theme();
-      var Converter = new System.Windows.Media.BrushConverter();
-
-      if (ThemeElement.ApplicationBackground != "")
-        Theme.ApplicationBackground = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationBackground);
-
-      if (ThemeElement.ApplicationButtonToolbarBackground != "")
-        Theme.ApplicationButtonToolbarBackground = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationButtonToolbarBackground);
-
-      if (ThemeElement.ApplicationButtonBorder != "")
-        Theme.ApplicationButtonBorder = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationButtonBorder);
-
-      if (ThemeElement.ApplicationButtonBackground != "")
-        Theme.ApplicationButtonBackground = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationButtonBackground);
-
-      if (ThemeElement.ApplicationButtonForeground != "")
-        Theme.ApplicationButtonForeground = (Brush)Converter.ConvertFromString(ThemeElement.ApplicationButtonForeground);
-
-      if (ThemeElement.ProcessHeadingForeground != "")
-        Theme.ProcessHeadingForeground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessHeadingForeground);
-
-      if (ThemeElement.ProcessBorderBackground != "")
-        Theme.ProcessBorderBackground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessBorderBackground);
-
-      if (ThemeElement.ProcessBorder != "")
-        Theme.ProcessBorder = (Brush)Converter.ConvertFromString(ThemeElement.ProcessBorder);
-
-      if (ThemeElement.ProcessButtonBorder != "")
-        Theme.ProcessButtonBorder = (Brush)Converter.ConvertFromString(ThemeElement.ProcessButtonBorder);
-
-      if (ThemeElement.ProcessButtonBackground != "")
-        Theme.ProcessButtonBackground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessButtonBackground);
-
-      if (ThemeElement.ProcessButtonForeground != "")
-        Theme.ProcessButtonForeground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessButtonForeground);
-
-      if (ThemeElement.ProcessCaptionForeground != "")
-        Theme.ProcessCaptionForeground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessCaptionForeground);
-
-      if (ThemeElement.ProcessDataForeground != "")
-        Theme.ProcessDataForeground = (Brush)Converter.ConvertFromString(ThemeElement.ProcessDataForeground);
-
-      return Theme;
     }
   }
 }

@@ -2,72 +2,160 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Configuration;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shell;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace Slayer
 {
+  static class NativeMethods
+  {
+    [Flags]
+
+    public enum AssocF
+    {
+      Init_NoRemapCLSID = 0x1,
+      Init_ByExeName = 0x2,
+      Open_ByExeName = 0x2,
+      Init_DefaultToStar = 0x4,
+      Init_DefaultToFolder = 0x8,
+      NoUserSettings = 0x10,
+      NoTruncate = 0x20,
+      Verify = 0x40,
+      RemapRunDll = 0x80,
+      NoFixUps = 0x100,
+      IgnoreBaseClass = 0x200
+    }
+
+    public enum AssocStr
+    {
+      Command = 1,
+      Executable,
+      FriendlyDocName,
+      FriendlyAppName,
+      NoOpen,
+      ShellNewValue,
+      DDECommand,
+      DDEIfExec,
+      DDEApplication,
+      DDETopic
+    }
+
+    [DllImport("user32.dll")]
+    public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+    public static extern uint AssocQueryString(AssocF flags, AssocStr str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, ref uint pcchOut);
+  }
+
+  static class NativeMethodHelper
+  {
+    public static string AssociatedApplicationPathForExtension(NativeMethods.AssocStr association, string extension)
+    {
+      const int S_OK = 0;
+      const int S_FALSE = 1;
+
+      uint length = 0;
+      uint ret = NativeMethods.AssocQueryString(NativeMethods.AssocF.NoUserSettings, association, extension, null, null, ref length);
+      if (ret != S_FALSE)
+        throw new InvalidOperationException("Could not determine associated string");
+
+      var sb = new StringBuilder((int)length); // (length-1) will probably work too as the marshaller adds null termination
+      ret = NativeMethods.AssocQueryString(NativeMethods.AssocF.NoUserSettings, association, extension, null, sb, ref length);
+      if (ret != S_OK)
+        throw new InvalidOperationException("Could not determine associated string");
+
+      return sb.ToString();
+    }
+  }
+
   class SlayerApplication
   {
     private Application Application;
     private string ApplicationFilePath;
     private Configuration Configuration;
     private SlayableConfigurationSection SlayableSection;
-    private SlayerColourThemeSection ColourThemeSection;
+    private string ConfigurationFilePath;
 
-    private List<string> arguments = new List<string>();
-    private Process[] ProcessesArray = null;
-    private bool alwaysPreview = false;
+    private bool AlwaysPreview = false;
     private Theme Theme;
 
-    public string ProcessName { get; set; }
-    public List<string> Arguments { get { return arguments; } }
+    public string ProcessName { get; private set; }
+    public List<string> Arguments { get; private set; }
 
     public SlayerApplication()
     {
+      this.Arguments = new List<string>();
       this.Application = new Application();
-      this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-      this.Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-      this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
-      this.ColourThemeSection = (SlayerColourThemeSection)Configuration.GetSection("slayerColourThemeSection");
 
-      Theme = ThemeHelper.Default();
+      var Assembly = System.Reflection.Assembly.GetExecutingAssembly();
+      var DefaultConfigurationFileName = "Slayer.exe.Config";
+      var v1ConfigurationFileName = "Slayer_v1.exe.Config";
+      var v2ConfigurationFileName = "Slayer_v2.exe.Config";
+      var UserDataFolder = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+      var ApplicationDataFolder = Path.Combine(UserDataFolder, "Slayer");
+      this.ConfigurationFilePath = Path.Combine(ApplicationDataFolder, DefaultConfigurationFileName);
 
-      // colour themes
-
-      if (ColourThemeSection != null && ColourThemeSection.Theme != "" && !ColourThemeSection.Theme.Equals("default", StringComparison.CurrentCultureIgnoreCase))
+      if (!File.Exists(ConfigurationFilePath))
       {
-        // load the specified theme from the list
-        SlayerColourThemeElement ColourTheme = null;
-        
-        foreach (SlayerColourThemeElement ThemeElement in ColourThemeSection.Themes)
+        if (!Directory.Exists(ApplicationDataFolder))
+          Directory.CreateDirectory(ApplicationDataFolder);
+
+        using (var StreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
+        using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
         {
-          if (ThemeElement.Name.Equals(ColourThemeSection.Theme, StringComparison.CurrentCultureIgnoreCase))
-          {
-            ColourTheme = ThemeElement;
-            break;
-          }
+          FileWriter.Write(StreamReader.ReadToEnd());
+          FileWriter.Flush();
+        }
+      } else
+      {
+        var ReplaceConfigFile = false;
+
+        using (var v1ConfigStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + v1ConfigurationFileName)))
+        using (var v2ConfigStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + v2ConfigurationFileName)))
+        using (var LocalConfigStreamReader = new StreamReader(ConfigurationFilePath))
+        {
+          var Sha1 = new SHA1CryptoServiceProvider();
+          var v1Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v1ConfigStreamReader.ReadToEnd())));
+          var v2Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v2ConfigStreamReader.ReadToEnd())));
+          var LocalHash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(LocalConfigStreamReader.ReadToEnd())));
+          
+          ReplaceConfigFile = LocalHash == v1Hash;
         }
 
-        if (ColourTheme == null)
-          throw new ApplicationException(string.Format("Could not locate theme '{0}'", ColourThemeSection.Theme));
+        if (ReplaceConfigFile)
+        {
+          File.Delete(ConfigurationFilePath);
 
-        Theme = ThemeHelper.Load(ColourTheme);
+          using (var CurrentStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
+          using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
+          {
+            FileWriter.Write(CurrentStreamReader.ReadToEnd());
+            FileWriter.Flush();
+          }
+        }
       }
+
+      this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+      var ConfigurationMap = new ExeConfigurationFileMap();
+      ConfigurationMap.ExeConfigFilename = ConfigurationFilePath;
+      this.Configuration = ConfigurationManager.OpenMappedExeConfiguration(ConfigurationMap, ConfigurationUserLevel.None);
+      this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
+    
+      Theme = ThemeHelper.Default();
     }
 
     public void Execute()
     {
       ConfigureJumpList();
 
-      if (arguments.Count > 0)
+      if (Arguments.Count > 0)
       {
         foreach (string argument in Arguments)
         {
@@ -96,23 +184,7 @@ namespace Slayer
             
             if (SwitchParameter.ToUpper() == "AlwaysPreview".ToUpper())
             {
-              alwaysPreview = true;
-            }
-            else if (SwitchParameter.Equals("SetTheme", StringComparison.CurrentCultureIgnoreCase))
-            {
-              var ConfigurationFileInfo = new FileInfo(Configuration.FilePath);
-              var IsReadOnly = ConfigurationFileInfo.IsReadOnly;
-
-              if (IsReadOnly)
-                ConfigurationFileInfo.IsReadOnly = false;
-
-              ColourThemeSection.Theme = SwitchArgument;
-              Configuration.Save(ConfigurationSaveMode.Modified);
-              ConfigureJumpList(); //need to update the default marker to be next to the correct theme name.
-
-              if (IsReadOnly)
-                ConfigurationFileInfo.IsReadOnly = true;
-              return;
+              AlwaysPreview = true;
             }
             else
             {
@@ -135,7 +207,7 @@ namespace Slayer
           if (Element.Default)
           {
             ProcessName = Element.ProcessName;
-            alwaysPreview = Element.Preview;
+            AlwaysPreview = Element.Preview;
             break;
           }
         }
@@ -150,21 +222,18 @@ namespace Slayer
 
       // TODO: Should the app also handle the user passing in a path instead of 'friendly' process name?
 
-      ProcessesArray = Process.GetProcessesByName(sanitisedProcessName);
+      var ProcessesArray = Process.GetProcessesByName(sanitisedProcessName);
 
       if (ProcessesArray.Length > 0)
       {
-        if ((ProcessesArray.Length == 1) && !alwaysPreview)
+        if ((ProcessesArray.Length == 1) && !AlwaysPreview)
         {
           //kill the process
           ProcessesArray[0].Kill();
         }
         else
         {
-          List<Process> ProcessList = new List<Process>();
-
-          foreach (Process process in ProcessesArray)
-            ProcessList.Add(process);
+          List<Process> ProcessList = new List<Process>(ProcessesArray);
 
           Application.ShutdownMode = ShutdownMode.OnMainWindowClose;
           Application.DispatcherUnhandledException += (Sender, Event) =>
@@ -176,13 +245,57 @@ namespace Slayer
           var MainWindow = new Window();
           Application.MainWindow = MainWindow;
 
-          var VisualEngine = new SlayerVisualEngine(MainWindow)
+          var VisualEngine = new SlayerVisualEngine()
           {
             Theme = this.Theme,
             ProcessList = ProcessList,
             Application = Application
           };
-          VisualEngine.Install();
+          VisualEngine.Install(MainWindow);
+          VisualEngine.KillAllEvent += () =>
+          {
+            ProcessList.ForEach(P => P.Kill());
+            Application.Shutdown();
+          };
+          VisualEngine.KillOldestEvent += () =>
+          {
+            var OldestProcess = ProcessList.OrderBy(P => P.StartTime).First();
+
+            OldestProcess.Kill();
+            Application.Shutdown();
+          };
+          VisualEngine.KillYoungestEvent += () =>
+          {
+            var YoungestProcess = ProcessList.OrderBy(P => P.StartTime).Last();
+
+            YoungestProcess.Kill();
+            Application.Shutdown();
+          };
+          VisualEngine.ProcessShowMeEvent += (Context) =>
+          {
+            NativeMethods.SetForegroundWindow(Context.MainWindowHandle);
+          };
+          VisualEngine.ProcessKillMeEvent += (Context) =>
+          {
+            Context.Kill();
+            ProcessList.Remove(Context);
+
+            if (ProcessList.Count < 1)
+              Application.Shutdown();
+          };
+          VisualEngine.ProcessKillOthersEvent += (Context) =>
+          {
+            List<Process> KilledProcesses = new List<Process>();
+
+            foreach (Process KillableProcess in ProcessList.Where(searchprocess => searchprocess != Context))
+            {
+              KillableProcess.Kill();
+              KilledProcesses.Add(KillableProcess);
+            };
+
+            foreach (Process KilledProcess in KilledProcesses)
+              ProcessList.Remove(KilledProcess);
+          };
 
           MainWindow.Show();
 
@@ -195,27 +308,21 @@ namespace Slayer
     {
       var JumpList = new JumpList();
 
-      if (ColourThemeSection != null)
-      {
-        var DefaultThemeTask = new JumpTask();
-        JumpList.JumpItems.Add(DefaultThemeTask);
-        DefaultThemeTask.CustomCategory = "Theme";
-        DefaultThemeTask.Arguments = "-settheme:default";
-        DefaultThemeTask.Title = "Default";
-        if (ColourThemeSection.Theme.Equals("default", StringComparison.CurrentCultureIgnoreCase))
-          DefaultThemeTask.Title += " \u2605";//★
-
-        foreach (SlayerColourThemeElement ThemeElement in ColourThemeSection.Themes)
-        {
-          var ThemeTask = new JumpTask();
-          JumpList.JumpItems.Add(ThemeTask);
-          ThemeTask.CustomCategory = "Theme";
-          ThemeTask.Arguments = "-settheme:" + ThemeElement.Name;
-          ThemeTask.Title = ThemeElement.Name;
-          if (ColourThemeSection.Theme.Equals(ThemeElement.Name, StringComparison.CurrentCultureIgnoreCase))
-            ThemeTask.Title += " \u2605";//★
-        }
-      }
+      var EditConfigurationLocationTask = new JumpTask();
+      JumpList.JumpItems.Add(EditConfigurationLocationTask);
+      EditConfigurationLocationTask.CustomCategory = "Configuration";
+      EditConfigurationLocationTask.Title = "Edit configuration";
+      EditConfigurationLocationTask.ApplicationPath = ConfigurationFilePath;
+      EditConfigurationLocationTask.IconResourcePath = NativeMethodHelper.AssociatedApplicationPathForExtension(NativeMethods.AssocStr.Executable, Path.GetExtension(ConfigurationFilePath));
+      
+      var OpenConfigurationFileLocationTask = new JumpTask();
+      JumpList.JumpItems.Add(OpenConfigurationFileLocationTask);
+      OpenConfigurationFileLocationTask.CustomCategory = "Configuration";
+      OpenConfigurationFileLocationTask.Title = "Open configuration location";
+      OpenConfigurationFileLocationTask.ApplicationPath = "explorer.exe";
+      OpenConfigurationFileLocationTask.Arguments = string.Format("/select,\"{0}\"", ConfigurationFilePath);
+      OpenConfigurationFileLocationTask.IconResourcePath = "explorer.exe";
+      OpenConfigurationFileLocationTask.IconResourceIndex = 0;
 
       if (SlayableSection != null)
       {
