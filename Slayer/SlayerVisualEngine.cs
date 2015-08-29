@@ -60,10 +60,12 @@ namespace Slayer
           Window.Close();
       };
 
-      MainBorder = new Border();
+      MainBorder = new Border
+      {
+        Padding = new Thickness(4),
+        Background = Theme.ApplicationBackground
+      };
       Window.Content = MainBorder;
-      MainBorder.Padding = new Thickness(4);
-      MainBorder.Background = Theme.ApplicationBackground;
 
       ProcessList.Sort(SortByStartTime);
 
@@ -73,15 +75,16 @@ namespace Slayer
       var IconUri = new Uri("pack://application:,,,/Slayer;component/Images/Close-128.ico"); // File needs to be set as a resource in it's properties
       Window.Icon = new System.Windows.Media.Imaging.BitmapImage(IconUri);
 
-      var DockPanel = new DockPanel();
+      var DockPanel = new DockPanel
+      {
+        LastChildFill = false,
+        HorizontalAlignment = HorizontalAlignment.Stretch
+      };
       MainBorder.Child = DockPanel;
-      DockPanel.LastChildFill = false;
-      DockPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-      var ProcessNameBorder = new Border();
+      var ProcessNameBorder = new Border { Background = Theme.ApplicationButtonToolbarBackground };
       DockPanel.Children.Add(ProcessNameBorder);
       DockPanel.SetDock(ProcessNameBorder, Dock.Top);
-      ProcessNameBorder.Background = Theme.ApplicationButtonToolbarBackground;
 
       var ProcessNameCaption = new Label
       {
@@ -92,11 +95,13 @@ namespace Slayer
       };
       ProcessNameBorder.Child = ProcessNameCaption;
 
-      var ButtonBorder = new Border();
+      var ButtonBorder = new Border
+      {
+        Background = Theme.ApplicationButtonToolbarBackground,
+        Padding = new Thickness(0, 5, 0, 5)
+      };
       DockPanel.Children.Add(ButtonBorder);
       DockPanel.SetDock(ButtonBorder, Dock.Bottom);
-      ButtonBorder.Background = Theme.ApplicationButtonToolbarBackground;
-      ButtonBorder.Padding = new Thickness(0, 5, 0, 5);
 
       var ButtonStackPanel = new StackPanel()
       {
