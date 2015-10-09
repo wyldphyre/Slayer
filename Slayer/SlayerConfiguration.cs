@@ -1,6 +1,4 @@
-﻿using System.Collections;
-/*! 1 !*/
-using System.Configuration;
+﻿using System.Configuration;
 using System.Windows.Media;
 
 namespace Slayer

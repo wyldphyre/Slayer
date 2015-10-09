@@ -1,8 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SafeVersion(! 1 !)_", "_SafeVersion(!!)_", "{A9C2192E-54C9-41D7-8CFA-10E2DD62B3F5}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slayer", "Slayer\Slayer.csproj", "{046110C2-6230-48A8-9AFD-BB0A1EF2545F}"
 EndProject
 Global
