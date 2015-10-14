@@ -56,19 +56,19 @@ namespace Slayer
   sealed class Theme
   {
     public Brush ApplicationProcessNameHeaderBackground { get; set; }
-    public Brush ApplicationBackground { get;  set; }
-    public Brush ApplicationButtonBorder { get;  set; }
+    public Brush ApplicationBackground { get; set; }
+    public Brush ApplicationButtonBorder { get; set; }
     public Brush ApplicationButtonToolbarBackground { get; set; }
-    public Brush ApplicationButtonBackground { get;  set; }
-    public Brush ApplicationButtonForeground { get;  set; }
-    public Brush ProcessHeadingForeground { get;  set; }
-    public Brush ProcessBorderBackground { get;  set; }
-    public Brush ProcessBorder { get;  set; }
-    public Brush ProcessButtonBorder { get;  set; }
-    public Brush ProcessButtonBackground { get;  set; }
-    public Brush ProcessButtonForeground { get;  set; }
-    public Brush ProcessCaptionForeground { get;  set; }
-    public Brush ProcessDataForeground { get;  set; }
+    public Brush ApplicationButtonBackground { get; set; }
+    public Brush ApplicationButtonForeground { get; set; }
+    public Brush ProcessHeadingForeground { get; set; }
+    public Brush ProcessBorderBackground { get; set; }
+    public Brush ProcessBorder { get; set; }
+    public Brush ProcessButtonBorder { get; set; }
+    public Brush ProcessButtonBackground { get; set; }
+    public Brush ProcessButtonForeground { get; set; }
+    public Brush ProcessCaptionForeground { get; set; }
+    public Brush ProcessDataForeground { get; set; }
   }
 
   static class ThemeHelper
