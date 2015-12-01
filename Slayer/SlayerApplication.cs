@@ -306,34 +306,40 @@ namespace Slayer
     {
       var JumpList = new JumpList();
 
-      var EditConfigurationLocationTask = new JumpTask();
-      JumpList.JumpItems.Add(EditConfigurationLocationTask);
-      EditConfigurationLocationTask.CustomCategory = "Configuration";
-      EditConfigurationLocationTask.Title = "Edit configuration";
-      EditConfigurationLocationTask.ApplicationPath = ConfigurationFilePath;
-      EditConfigurationLocationTask.IconResourcePath = NativeMethodHelper.AssociatedApplicationPathForExtension(NativeMethods.AssocStr.Executable, Path.GetExtension(ConfigurationFilePath));
-      
-      var OpenConfigurationFileLocationTask = new JumpTask();
-      JumpList.JumpItems.Add(OpenConfigurationFileLocationTask);
-      OpenConfigurationFileLocationTask.CustomCategory = "Configuration";
-      OpenConfigurationFileLocationTask.Title = "Open configuration location";
-      OpenConfigurationFileLocationTask.ApplicationPath = "explorer.exe";
-      OpenConfigurationFileLocationTask.Arguments = string.Format("/select,\"{0}\"", ConfigurationFilePath);
-      OpenConfigurationFileLocationTask.IconResourcePath = "explorer.exe";
-      OpenConfigurationFileLocationTask.IconResourceIndex = 0;
+      JumpList.JumpItems.Add(new JumpTask
+      {
+        CustomCategory = "Configuration",
+        Title = "Edit configuration",
+        ApplicationPath = ConfigurationFilePath,
+        IconResourcePath = NativeMethodHelper.AssociatedApplicationPathForExtension(NativeMethods.AssocStr.Executable, Path.GetExtension(ConfigurationFilePath))
+      });
+
+      JumpList.JumpItems.Add(new JumpTask
+      {
+        CustomCategory = "Configuration",
+        Title = "Open configuration location",
+        ApplicationPath = "explorer.exe",
+        Arguments = string.Format("/select,\"{0}\"", ConfigurationFilePath),
+        IconResourcePath = "explorer.exe",
+        IconResourceIndex = 0
+      });
 
       if (SlayableSection != null)
       {
         foreach (SlayableApplicationElement Element in SlayableSection.Applications)
         {
-          var Task = new JumpTask();
+          var Task = new JumpTask
+          {
+            CustomCategory = "Slay",
+            ApplicationPath = ApplicationFilePath,
+            Arguments = Element.ProcessName,
+            Title = Element.Name
+          };
           JumpList.JumpItems.Add(Task);
-          Task.CustomCategory = "Slay";
-          Task.ApplicationPath = ApplicationFilePath;
-          Task.Arguments = Element.ProcessName;
-          Task.Title = Element.Name;
+
           if (Element.Default)
             Task.Title += " \u2605";//★
+
           if (Element.Preview)
             Task.Arguments += @" /AlwaysPreview";
         }
