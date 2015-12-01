@@ -112,32 +112,26 @@ namespace Slayer
       ButtonBorder.Child = ButtonStackPanel;
       Grid.SetRow(ButtonStackPanel, 1);
 
-      var KillAllButton = NewGlobalButton("Kill All");
-      ButtonStackPanel.Children.Add(KillAllButton);
-      KillAllButton.Click += (object sender, RoutedEventArgs e) =>
+      ButtonStackPanel.Children.Add(NewGlobalButton("Kill All", (object sender, RoutedEventArgs e) =>
       {
         var KillAll = KillAllEvent;
         if (KillAll != null)
           KillAll();
-      };
+      }));
 
-      var KillOldestButton = NewGlobalButton("Kill Oldest");
-      ButtonStackPanel.Children.Add(KillOldestButton);
-      KillOldestButton.Click += (object sender, RoutedEventArgs e) =>
+      ButtonStackPanel.Children.Add(NewGlobalButton("Kill Oldest", (object sender, RoutedEventArgs e) =>
       {
         var KillOldest = KillOldestEvent;
         if (KillOldest != null)
           KillOldest();
-      };
-
-      var KillYoungestButton = NewGlobalButton("Kill Youngest");
-      ButtonStackPanel.Children.Add(KillYoungestButton);
-      KillYoungestButton.Click += (object sender, RoutedEventArgs e) =>
+      }));
+      
+      ButtonStackPanel.Children.Add(NewGlobalButton("Kill Youngest", (object sender, RoutedEventArgs e) =>
       {
         var KillYoungest = KillYoungestEvent;
         if (KillYoungest != null)
           KillYoungest();
-      };
+      }));
 
       DockPanel.LastChildFill = true; // use to make the process border fill the window and stretch with it
       var ProcessBorder = new Border();
@@ -188,39 +182,34 @@ namespace Slayer
         };
         ProcessStackPanel.Children.Add(ButtonStackPanel);
 
-        var ShowMeButton = NewProcessButton("Show Me");
-        ButtonStackPanel.Children.Add(ShowMeButton);
-        ShowMeButton.Click += (Sender, Event) =>
+        ButtonStackPanel.Children.Add(NewProcessButton("Show Me", (Sender, Event) =>
         {
-          if (ProcessShowMeEvent != null)
-            ProcessShowMeEvent(Process);
-        };
+          var ProcessShowMe = ProcessShowMeEvent;
+          if (ProcessShowMe != null)
+            ProcessShowMe(Process);
+        }));
 
-        var KillMeButton = NewProcessButton("Kill Me");
-        ButtonStackPanel.Children.Add(KillMeButton);
-        KillMeButton.Click += (Sender, Event) =>
+        ButtonStackPanel.Children.Add(NewProcessButton("Kill Me", (Sender, Event) =>
         {
           if (ProcessKillMeEvent != null)
           {
             ProcessKillMeEvent(Process);
             ComposeProcesses();
           }
-        };
+        }));
 
-        var KillOthersButton = NewProcessButton("Kill Others");
-        ButtonStackPanel.Children.Add(KillOthersButton);
-        KillOthersButton.Click += (Sender, Event) =>
+        ButtonStackPanel.Children.Add(NewProcessButton("Kill Others", (Sender, Event) =>
         {
           if (ProcessKillOthersEvent != null)
           {
             ProcessKillOthersEvent(Process);
             ComposeProcesses();
           }
-        };
+        }));
       }
     }
 
-    private Button NewGlobalButton(string Caption)
+    private Button NewGlobalButton(string Caption, RoutedEventHandler ClickAction)
     {
       var Result = new Button()
       {
@@ -234,6 +223,7 @@ namespace Slayer
         FontSize = 15,
         MinWidth = MinimumButtonWidth
       };
+      Result.Click += ClickAction;
 
       return Result;
     }
@@ -254,7 +244,7 @@ namespace Slayer
           return Process1.StartTime.CompareTo(Process2.StartTime);
       }
     }
-    private Button NewProcessButton(string Caption)
+    private Button NewProcessButton(string Caption, RoutedEventHandler ClickAction)
     {
       var Result = new Button()
       {
@@ -267,6 +257,8 @@ namespace Slayer
         FontSize = 15,
         MinWidth = MinimumProcessButtonWidth
       };
+      Result.Click += ClickAction;
+
       return Result;
     }
     private string TimeSpanAsWords(TimeSpan TimeSpan)
