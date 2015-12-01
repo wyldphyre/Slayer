@@ -66,7 +66,7 @@ namespace Slayer
       };
       Window.Content = MainBorder;
 
-      ProcessList.Sort(SortByStartTime);
+      ProcessList = ProcessList.OrderBy(Process => Process.StartTime).ToList();
 
       var AssemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
       Window.Title = String.Format("{0} v{1}", AssemblyName.Name, AssemblyName.Version.ToString().TrimEnd('.', '0'));
@@ -226,23 +226,6 @@ namespace Slayer
       Result.Click += ClickAction;
 
       return Result;
-    }
-    private int SortByStartTime(Process Process1, Process Process2)
-    {
-      if (Process1 == null)
-      {
-        if (Process2 == null)
-          return 0;
-        else
-          return -1;
-      }
-      else
-      {
-        if (Process2 == null) // ...and process2 is null, process1 is greater.
-          return 1;
-        else
-          return Process1.StartTime.CompareTo(Process2.StartTime);
-      }
     }
     private Button NewProcessButton(string Caption, RoutedEventHandler ClickAction)
     {
