@@ -283,16 +283,10 @@ namespace Slayer
           };
           VisualEngine.ProcessKillOthersEvent += (Context) =>
           {
-            List<Process> KilledProcesses = new List<Process>();
-
             foreach (Process KillableProcess in ProcessList.Where(searchprocess => searchprocess != Context))
-            {
               KillableProcess.Kill();
-              KilledProcesses.Add(KillableProcess);
-            };
 
-            foreach (Process KilledProcess in KilledProcesses)
-              ProcessList.Remove(KilledProcess);
+            Application.Shutdown();
           };
 
           MainWindow.Show();
