@@ -82,7 +82,6 @@ namespace Slayer
     private string ConfigurationFilePath;
 
     private bool AlwaysPreview = false;
-    private Theme Theme;
 
     public string ProcessName { get; private set; }
     public List<string> Arguments { get; private set; }
@@ -145,8 +144,6 @@ namespace Slayer
       ConfigurationMap.ExeConfigFilename = ConfigurationFilePath;
       this.Configuration = ConfigurationManager.OpenMappedExeConfiguration(ConfigurationMap, ConfigurationUserLevel.None);
       this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
-    
-      Theme = ThemeHelper.Default();
     }
 
     public void Execute()
@@ -245,7 +242,7 @@ namespace Slayer
 
           var VisualEngine = new SlayerVisualEngine()
           {
-            Theme = this.Theme,
+            Theme = ThemeHelper.Default(),
             ProcessList = ProcessList,
             Application = Application
           };

@@ -10,6 +10,7 @@ namespace Slayer
 {
   interface ISlayerVisualEngine
   {
+    Theme Theme { get; set; }
     Application Application { get; set; }
     List<Process> ProcessList { get; set; }
     event Action KillAllEvent;

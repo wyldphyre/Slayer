@@ -55,20 +55,52 @@ namespace Slayer
 
   sealed class Theme
   {
-    public Brush ApplicationProcessNameHeaderBackground { get; set; }
-    public Brush ApplicationBackground { get; set; }
-    public Brush ApplicationButtonBorder { get; set; }
-    public Brush ApplicationButtonToolbarBackground { get; set; }
-    public Brush ApplicationButtonBackground { get; set; }
-    public Brush ApplicationButtonForeground { get; set; }
-    public Brush ProcessHeadingForeground { get; set; }
-    public Brush ProcessBorderBackground { get; set; }
-    public Brush ProcessBorder { get; set; }
-    public Brush ProcessButtonBorder { get; set; }
-    public Brush ProcessButtonBackground { get; set; }
-    public Brush ProcessButtonForeground { get; set; }
-    public Brush ProcessCaptionForeground { get; set; }
-    public Brush ProcessDataForeground { get; set; }
+    public Theme(
+      Brush ApplicationProcessNameHeaderBackground,
+      Brush ApplicationBackground,
+      Brush ApplicationButtonBorder,
+      Brush ApplicationButtonToolbarBackground,
+      Brush ApplicationButtonBackground,
+      Brush ApplicationButtonForeground,
+      Brush ProcessHeadingForeground,
+      Brush ProcessBorderBackground,
+      Brush ProcessBorder,
+      Brush ProcessButtonBorder,
+      Brush ProcessButtonBackground,
+      Brush ProcessButtonForeground,
+      Brush ProcessCaptionForeground,
+      Brush ProcessDataForeground)
+    {
+      this.ApplicationProcessNameHeaderBackground = ApplicationProcessNameHeaderBackground;
+      this.ApplicationBackground = ApplicationBackground;
+      this.ApplicationButtonBorder = ApplicationButtonBorder;
+      this.ApplicationButtonToolbarBackground = ApplicationButtonToolbarBackground;
+      this.ApplicationButtonBackground = ApplicationButtonBackground;
+      this.ApplicationButtonForeground = ApplicationButtonForeground;
+      this.ProcessHeadingForeground = ProcessHeadingForeground;
+      this.ProcessBorderBackground = ProcessBorderBackground;
+      this.ProcessBorder = ProcessBorder;
+      this.ProcessButtonBorder = ProcessButtonBorder;
+      this.ProcessButtonBackground = ProcessButtonBackground;
+      this.ProcessButtonForeground = ProcessButtonForeground;
+      this.ProcessCaptionForeground = ProcessCaptionForeground;
+      this.ProcessDataForeground = ProcessDataForeground;
+    }
+
+    public readonly Brush ApplicationProcessNameHeaderBackground;
+    public readonly Brush ApplicationBackground;
+    public readonly Brush ApplicationButtonBorder;
+    public readonly Brush ApplicationButtonToolbarBackground;
+    public readonly Brush ApplicationButtonBackground;
+    public readonly Brush ApplicationButtonForeground;
+    public readonly Brush ProcessHeadingForeground;
+    public readonly Brush ProcessBorderBackground;
+    public readonly Brush ProcessBorder;
+    public readonly Brush ProcessButtonBorder;
+    public readonly Brush ProcessButtonBackground;
+    public readonly Brush ProcessButtonForeground;
+    public readonly Brush ProcessCaptionForeground;
+    public readonly Brush ProcessDataForeground;
   }
 
   static class ThemeHelper
@@ -76,21 +108,22 @@ namespace Slayer
     public static Theme Default()
     {
       return new Theme
-      {
-        ApplicationProcessNameHeaderBackground = Brushes.DarkGray,
-        ApplicationBackground = Brushes.White,
-        ApplicationButtonBorder = Brushes.DarkGray,
-        ApplicationButtonBackground = Brushes.WhiteSmoke,
-        ApplicationButtonForeground = Brushes.OrangeRed,
-        ProcessHeadingForeground = Brushes.Black,
-        ProcessBorderBackground = Brushes.WhiteSmoke,
-        ProcessBorder = Brushes.DarkGray,
-        ProcessButtonBorder = Brushes.Transparent,
-        ProcessButtonBackground = Brushes.Transparent,
-        ProcessButtonForeground = Brushes.OrangeRed,
-        ProcessCaptionForeground = Brushes.Black,
-        ProcessDataForeground = Brushes.Black
-      };
+      (
+        ApplicationProcessNameHeaderBackground: Brushes.DarkGray,
+        ApplicationBackground: Brushes.White,
+        ApplicationButtonBorder: Brushes.DarkGray,
+        ApplicationButtonToolbarBackground: Brushes.Transparent,
+        ApplicationButtonBackground: Brushes.WhiteSmoke,
+        ApplicationButtonForeground: Brushes.OrangeRed,
+        ProcessHeadingForeground: Brushes.Black,
+        ProcessBorderBackground: Brushes.WhiteSmoke,
+        ProcessBorder: Brushes.DarkGray,
+        ProcessButtonBorder: Brushes.Transparent,
+        ProcessButtonBackground: Brushes.Transparent,
+        ProcessButtonForeground: Brushes.OrangeRed,
+        ProcessCaptionForeground: Brushes.Black,
+        ProcessDataForeground: Brushes.Black
+      );
     }
   }
 }
