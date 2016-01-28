@@ -19,6 +19,7 @@ namespace Slayer
     event Action<Process> ProcessShowMeEvent;
     event Action<Process> ProcessKillMeEvent;
     event Action<Process> ProcessKillOthersEvent;
+    void RemoveProcess(Process Process);
     void Install(Window Window);
   }
 
@@ -143,6 +144,10 @@ namespace Slayer
       ProcessesScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 
       ComposeProcesses();
+    }
+    public void RemoveProcess(Process Process)
+    {
+      ProcessList.Remove(Process);
     }
 
     private void ComposeProcesses()

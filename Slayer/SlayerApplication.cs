@@ -228,8 +228,6 @@ namespace Slayer
         }
         else
         {
-          List<Process> ProcessList = new List<Process>(ProcessesArray);
-
           Application.ShutdownMode = ShutdownMode.OnMainWindowClose;
           Application.DispatcherUnhandledException += (Sender, Event) =>
           {
@@ -243,25 +241,25 @@ namespace Slayer
           var VisualEngine = new SlayerVisualEngine()
           {
             Theme = ThemeHelper.Default(),
-            ProcessList = ProcessList,
+            ProcessList = new List<Process>(ProcessesArray),
             Application = Application
           };
           VisualEngine.Install(MainWindow);
           VisualEngine.KillAllEvent += () =>
           {
-            ProcessList.ForEach(P => P.Kill());
+            VisualEngine.ProcessList.ForEach(P => P.Kill());
             Application.Shutdown();
           };
           VisualEngine.KillOldestEvent += () =>
           {
-            var OldestProcess = ProcessList.OrderBy(P => P.StartTime).First();
+            var OldestProcess = VisualEngine.ProcessList.OrderBy(P => P.StartTime).First();
 
             OldestProcess.Kill();
             Application.Shutdown();
           };
           VisualEngine.KillYoungestEvent += () =>
           {
-            var YoungestProcess = ProcessList.OrderBy(P => P.StartTime).Last();
+            var YoungestProcess = VisualEngine.ProcessList.OrderBy(P => P.StartTime).Last();
 
             YoungestProcess.Kill();
             Application.Shutdown();
@@ -273,14 +271,14 @@ namespace Slayer
           VisualEngine.ProcessKillMeEvent += (Context) =>
           {
             Context.Kill();
-            ProcessList.Remove(Context);
+            VisualEngine.RemoveProcess(Context);
 
-            if (ProcessList.Count < 1)
+            if (VisualEngine.ProcessList.Count < 1)
               Application.Shutdown();
           };
           VisualEngine.ProcessKillOthersEvent += (Context) =>
           {
-            foreach (Process KillableProcess in ProcessList.Where(searchprocess => searchprocess != Context))
+            foreach (Process KillableProcess in VisualEngine.ProcessList.Where(searchprocess => searchprocess != Context))
               KillableProcess.Kill();
 
             Application.Shutdown();
