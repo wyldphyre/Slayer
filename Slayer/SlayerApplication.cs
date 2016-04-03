@@ -208,7 +208,7 @@ namespace Slayer
         }
       }
 
-      Debug.Assert(ProcessName != String.Empty, "ProcessName cannot be an empty string");
+      Debug.Assert(ProcessName != String.Empty, nameof(ProcessName) + " cannot be an empty string");
 
       string sanitisedProcessName = ProcessName;
 

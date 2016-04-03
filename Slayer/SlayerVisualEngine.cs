@@ -113,26 +113,9 @@ namespace Slayer
       ButtonBorder.Child = ButtonStackPanel;
       Grid.SetRow(ButtonStackPanel, 1);
 
-      ButtonStackPanel.Children.Add(NewGlobalButton("Kill All", (object sender, RoutedEventArgs e) =>
-      {
-        var KillAll = KillAllEvent;
-        if (KillAll != null)
-          KillAll();
-      }));
-
-      ButtonStackPanel.Children.Add(NewGlobalButton("Kill Oldest", (object sender, RoutedEventArgs e) =>
-      {
-        var KillOldest = KillOldestEvent;
-        if (KillOldest != null)
-          KillOldest();
-      }));
-      
-      ButtonStackPanel.Children.Add(NewGlobalButton("Kill Youngest", (object sender, RoutedEventArgs e) =>
-      {
-        var KillYoungest = KillYoungestEvent;
-        if (KillYoungest != null)
-          KillYoungest();
-      }));
+      ButtonStackPanel.Children.Add(NewGlobalButton("Kill All", (object sender, RoutedEventArgs e) => KillAllEvent?.Invoke() ));
+      ButtonStackPanel.Children.Add(NewGlobalButton("Kill Oldest", (object sender, RoutedEventArgs e) => KillOldestEvent?.Invoke() ));
+      ButtonStackPanel.Children.Add(NewGlobalButton("Kill Youngest", (object sender, RoutedEventArgs e) => KillYoungestEvent?.Invoke() ));
 
       DockPanel.LastChildFill = true; // use to make the process border fill the window and stretch with it
       var ProcessBorder = new Border();
@@ -189,27 +172,19 @@ namespace Slayer
 
         ButtonStackPanel.Children.Add(NewProcessButton("Show Me", (Sender, Event) =>
         {
-          var ProcessShowMe = ProcessShowMeEvent;
-          if (ProcessShowMe != null)
-            ProcessShowMe(Process);
+          ProcessShowMeEvent?.Invoke(Process);
         }));
 
         ButtonStackPanel.Children.Add(NewProcessButton("Kill Me", (Sender, Event) =>
         {
-          if (ProcessKillMeEvent != null)
-          {
-            ProcessKillMeEvent(Process);
-            ComposeProcesses();
-          }
+          ProcessKillMeEvent?.Invoke(Process);
+          ComposeProcesses();
         }));
 
         ButtonStackPanel.Children.Add(NewProcessButton("Kill Others", (Sender, Event) =>
         {
-          if (ProcessKillOthersEvent != null)
-          {
-            ProcessKillOthersEvent(Process);
-            ComposeProcesses();
-          }
+          ProcessKillOthersEvent?.Invoke(Process);
+          ComposeProcesses();
         }));
       }
     }
