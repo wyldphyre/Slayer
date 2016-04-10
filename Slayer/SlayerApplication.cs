@@ -156,7 +156,7 @@ namespace Slayer
         {
           if (argument.StartsWith(@"\"))
           {
-            MessageBox.Show(string.Format("Incorrect switch {0}. Use '-' or '/' instead of '\\'.", argument));
+            MessageBox.Show($"Incorrect switch {argument}. Use '-' or '/' instead of '\\'.");
             return;
           }
           if (argument.StartsWith("-") || argument.StartsWith("/"))
@@ -172,7 +172,7 @@ namespace Slayer
 
               if (SwitchArgument == "")
               {
-                MessageBox.Show(string.Format("The switch parameter \"{0}\" must be of the form <Switch>:<Argument>", SwitchParameter));
+                MessageBox.Show($"The switch parameter \"{SwitchParameter}\" must be of the form <Switch>:<Argument>");
                 return;
               }
             }
@@ -183,7 +183,7 @@ namespace Slayer
             }
             else
             {
-              MessageBox.Show(String.Format("The switch parameter \"{0}\" is not recognised.", SwitchParameter));
+              MessageBox.Show($"The switch parameter \"{SwitchParameter}\" is not recognised.");
               return; // do not continue running the application if there is something wrong with the parameters
             }
           }
@@ -208,7 +208,7 @@ namespace Slayer
         }
       }
 
-      Debug.Assert(ProcessName != String.Empty, nameof(ProcessName) + " cannot be an empty string");
+      Debug.Assert(ProcessName != String.Empty, $"{nameof(ProcessName)} cannot be an empty string");
 
       string sanitisedProcessName = ProcessName;
 
@@ -308,7 +308,7 @@ namespace Slayer
         CustomCategory = "Configuration",
         Title = "Open configuration location",
         ApplicationPath = "explorer.exe",
-        Arguments = string.Format("/select,\"{0}\"", ConfigurationFilePath),
+        Arguments = $"/select,\"{ConfigurationFilePath}\"",
         IconResourcePath = "explorer.exe",
         IconResourceIndex = 0
       });

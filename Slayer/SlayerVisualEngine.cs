@@ -156,8 +156,8 @@ namespace Slayer
         ProcessBorder.Child = ProcessStackPanel;
 
         ProduceProcessDataRow(ProcessStackPanel, "Main Window Title", Process.MainWindowTitle);
-        ProduceProcessDataRow(ProcessStackPanel, "Started", TimeSpanAsWords(DateTime.Now - Process.StartTime) + " ago");
-        ProduceProcessDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { string.Format("{0} MB", Process.WorkingSet64 / (1024 * 1024)), Process.Id.ToString() });
+        ProduceProcessDataRow(ProcessStackPanel, "Started", $"{TimeSpanAsWords(DateTime.Now - Process.StartTime)} ago");
+        ProduceProcessDataRow(ProcessStackPanel, new string[] { "Physical Memory", "Process ID" }, new string[] { $"{Process.WorkingSet64 / (1024 * 1024)} MB", Process.Id.ToString() });
         ProduceProcessDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(Process.TotalProcessorTime));
 
         // Buttons for the process
