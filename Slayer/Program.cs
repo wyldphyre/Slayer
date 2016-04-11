@@ -16,7 +16,7 @@ namespace Slayer
     [System.STAThread]
     static void Main(string[] Arguments)
     {
-      SlayerApplication slayerApplication = new SlayerApplication();
+      var slayerApplication = new SlayerApplication();
 
       slayerApplication.Arguments.AddRange(Arguments);
 

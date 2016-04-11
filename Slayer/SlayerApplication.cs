@@ -60,7 +60,7 @@ namespace Slayer
       const int S_FALSE = 1;
 
       uint length = 0;
-      uint ret = NativeMethods.AssocQueryString(NativeMethods.AssocF.NoUserSettings, association, extension, null, null, ref length);
+      var ret = NativeMethods.AssocQueryString(NativeMethods.AssocF.NoUserSettings, association, extension, null, null, ref length);
       if (ret != S_FALSE)
         throw new InvalidOperationException("Could not determine associated string");
 
@@ -75,13 +75,13 @@ namespace Slayer
 
   class SlayerApplication
   {
-    private Application Application;
-    private string ApplicationFilePath;
-    private Configuration Configuration;
-    private SlayableConfigurationSection SlayableSection;
-    private string ConfigurationFilePath;
+    private readonly Application Application;
+    private readonly string ApplicationFilePath;
+    private readonly Configuration Configuration;
+    private readonly SlayableConfigurationSection SlayableSection;
+    private readonly string ConfigurationFilePath;
 
-    private bool AlwaysPreview = false;
+    private bool AlwaysPreview;
 
     public string ProcessName { get; private set; }
     public List<string> Arguments { get; private set; }
@@ -92,11 +92,11 @@ namespace Slayer
       this.Application = new Application();
 
       var Assembly = System.Reflection.Assembly.GetExecutingAssembly();
-      var DefaultConfigurationFileName = "Slayer.exe.Config";
-      var v1ConfigurationFileName = "Slayer_v1.exe.Config";
-      var v2ConfigurationFileName = "Slayer_v2.exe.Config";
+      const string DefaultConfigurationFileName = "Slayer.exe.Config";
+      const string v1ConfigurationFileName = "Slayer_v1.exe.Config";
+      const string v2ConfigurationFileName = "Slayer_v2.exe.Config";
       var UserDataFolder = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
-      var ApplicationDataFolder = Path.Combine(UserDataFolder, "Slayer");
+      var ApplicationDataFolder = Path.Combine(UserDataFolder, nameof(Slayer));
       this.ConfigurationFilePath = Path.Combine(ApplicationDataFolder, DefaultConfigurationFileName);
 
       if (!File.Exists(ConfigurationFilePath))
@@ -177,7 +177,7 @@ namespace Slayer
               }
             }
             
-            if (SwitchParameter.ToUpper() == "AlwaysPreview".ToUpper())
+            if (SwitchParameter.ToUpper() == nameof(AlwaysPreview).ToUpper())
             {
               AlwaysPreview = true;
             }
@@ -210,7 +210,7 @@ namespace Slayer
 
       Debug.Assert(ProcessName != String.Empty, $"{nameof(ProcessName)} cannot be an empty string");
 
-      string sanitisedProcessName = ProcessName;
+      var sanitisedProcessName = ProcessName;
 
       if (sanitisedProcessName.EndsWith(".exe"))
         sanitisedProcessName = sanitisedProcessName.Remove(sanitisedProcessName.Length - ".exe".Length);
@@ -238,7 +238,7 @@ namespace Slayer
           var MainWindow = new Window();
           Application.MainWindow = MainWindow;
 
-          var VisualEngine = new SlayerVisualEngine()
+          var VisualEngine = new SlayerVisualEngine
           {
             Theme = ThemeHelper.Default(),
             ProcessList = new List<Process>(ProcessesArray),

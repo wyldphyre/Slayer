@@ -70,7 +70,7 @@ namespace Slayer
 
       ProcessList = ProcessList.OrderBy(Process => Process.StartTime).ToList();
 
-      Window.Title = String.Format("{0} v{1}", AssemblyHelper.ExecutingAssemblyName().Name, AssemblyHelper.CompactExecutingAssemblyVersion());
+      Window.Title = $"{AssemblyHelper.ExecutingAssemblyName().Name} v{AssemblyHelper.CompactExecutingAssemblyVersion()}";
 
       var IconUri = new Uri("pack://application:,,,/Slayer;component/Images/Close-128.ico"); // File needs to be set as a resource in it's properties
       Window.Icon = new System.Windows.Media.Imaging.BitmapImage(IconUri);
@@ -103,7 +103,7 @@ namespace Slayer
       DockPanel.Children.Add(ButtonBorder);
       DockPanel.SetDock(ButtonBorder, Dock.Bottom);
 
-      var ButtonStackPanel = new StackPanel()
+      var ButtonStackPanel = new StackPanel
       {
         Orientation = Orientation.Horizontal,
         Margin = new Thickness(5),
@@ -141,7 +141,7 @@ namespace Slayer
       foreach (var Process in ProcessList)
       {
         // build a panel to stick on MainStackPanel
-        var ProcessBorder = new Border()
+        var ProcessBorder = new Border
         {
           BorderThickness = new Thickness(1, 1, 2, 2),
           Background = Theme.ProcessBorderBackground,
@@ -161,7 +161,7 @@ namespace Slayer
         ProduceProcessDataRow(ProcessStackPanel, "Total Processor Time", TimeSpanAsWords(Process.TotalProcessorTime));
 
         // Buttons for the process
-        var ButtonStackPanel = new StackPanel()
+        var ButtonStackPanel = new StackPanel
         {
           Orientation = Orientation.Horizontal,
           HorizontalAlignment = HorizontalAlignment.Center,
@@ -191,7 +191,7 @@ namespace Slayer
 
     private Button NewGlobalButton(string Caption, RoutedEventHandler ClickAction)
     {
-      var Result = new Button()
+      var Result = new Button
       {
         Content = Caption,
         VerticalAlignment = VerticalAlignment.Bottom,
@@ -209,7 +209,7 @@ namespace Slayer
     }
     private Button NewProcessButton(string Caption, RoutedEventHandler ClickAction)
     {
-      var Result = new Button()
+      var Result = new Button
       {
         Content = Caption,
         Background = Theme.ProcessButtonBackground,
@@ -224,9 +224,9 @@ namespace Slayer
 
       return Result;
     }
-    private string TimeSpanAsWords(TimeSpan TimeSpan)
+    private static string TimeSpanAsWords(TimeSpan TimeSpan)
     {
-      StringBuilder Result = new StringBuilder("");
+      var Result = new StringBuilder("");
 
       if (TimeSpan.Days > 0)
         Result.AppendFormat("{0} days", TimeSpan.Days);
