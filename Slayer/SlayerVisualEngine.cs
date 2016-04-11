@@ -273,7 +273,7 @@ namespace Slayer
     {
       Debug.Assert(Caption.Length == Data.Length, "Caption array and Data array must have the same length");
 
-      var RowStackPanel = new StackPanel()
+      var RowStackPanel = new StackPanel
       {
         Orientation = Orientation.Horizontal,
         HorizontalAlignment = HorizontalAlignment.Stretch
@@ -286,7 +286,7 @@ namespace Slayer
         RowStackPanel.Children.Add(DataStackPanel);
         DataStackPanel.Orientation = Orientation.Horizontal;
 
-        var CaptionLabel = new Label()
+        var CaptionLabel = new Label
         {
           Content = Caption[i],
           FontWeight = FontWeights.Heavy,
@@ -294,7 +294,7 @@ namespace Slayer
         };
         DataStackPanel.Children.Add(CaptionLabel);
 
-        var DataTextBlock = new TextBlock()
+        var DataTextBlock = new TextBlock
         {
           Text = Data[i],
           TextTrimming = TextTrimming.CharacterEllipsis,
@@ -306,7 +306,7 @@ namespace Slayer
         DataStackPanel.Children.Add(DataLabel);
         DataLabel.Content = DataTextBlock;
 
-        var DataToolTip = new ToolTip()
+        var DataToolTip = new ToolTip
         {
           PlacementTarget = DataLabel,
           Placement = System.Windows.Controls.Primitives.PlacementMode.RelativePoint,
