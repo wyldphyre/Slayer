@@ -143,7 +143,7 @@ namespace Slayer
         // build a panel to stick on MainStackPanel
         var ProcessBorder = new Border
         {
-          BorderThickness = new Thickness(1, 1, 2, 2),
+          BorderThickness = new Thickness(1),
           Background = Theme.ProcessBorderBackground,
           BorderBrush = Theme.ProcessBorder,
           Margin = new Thickness(4, 8, 8, 8),
