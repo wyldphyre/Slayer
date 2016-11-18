@@ -140,8 +140,10 @@ namespace Slayer
       }
 
       this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-      var ConfigurationMap = new ExeConfigurationFileMap();
-      ConfigurationMap.ExeConfigFilename = ConfigurationFilePath;
+      var ConfigurationMap = new ExeConfigurationFileMap
+      {
+        ExeConfigFilename = ConfigurationFilePath
+      };
       this.Configuration = ConfigurationManager.OpenMappedExeConfiguration(ConfigurationMap, ConfigurationUserLevel.None);
       this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
     }
