@@ -223,7 +223,6 @@ namespace Slayer
       {
         if ((ProcessesArray.Length == 1) && !AlwaysPreview)
         {
-          //kill the process
           ProcessesArray[0].Kill();
         }
         else
