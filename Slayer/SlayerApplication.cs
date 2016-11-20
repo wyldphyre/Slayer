@@ -76,9 +76,9 @@ namespace Slayer
   class SlayerApplication
   {
     private readonly Application Application;
-    private readonly string ApplicationFilePath;
     private readonly Configuration Configuration;
     private readonly SlayableConfigurationSection SlayableSection;
+    private readonly string ApplicationFilePath;
     private readonly string ConfigurationFilePath;
 
     private bool AlwaysPreview;
