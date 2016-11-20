@@ -5,6 +5,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Diagnostics;
 using System.Text;
+using System.Drawing;
+using System.IO;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace Slayer
 {
@@ -107,6 +111,29 @@ namespace Slayer
       DockPanel.Children.Add(ProcessNameBorder);
       DockPanel.SetDock(ProcessNameBorder, Dock.Top);
 
+      var ProcessNameStackPanel = new StackPanel();
+      ProcessNameStackPanel.Orientation = Orientation.Horizontal;
+      ProcessNameStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
+      ProcessNameBorder.Child = ProcessNameStackPanel;
+
+      var AssociatedIcon = Icon.ExtractAssociatedIcon(ProcessList.First().MainModule.FileName);
+      if (AssociatedIcon != null)
+      {
+        using (var Bitmap = AssociatedIcon.ToBitmap())
+        {
+          var stream = new MemoryStream();
+          Bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+
+          var IconImage = new System.Windows.Controls.Image();
+          IconImage.Stretch = System.Windows.Media.Stretch.None;// RenderSize.Height = 16;
+          IconImage.Source = BitmapFrame.Create(stream);
+          IconImage.HorizontalAlignment = HorizontalAlignment.Right;
+          IconImage.Margin = new Thickness(0, 0, 10, 0);
+
+          ProcessNameStackPanel.Children.Add(IconImage);
+        }
+      }
+
       var ProcessNameCaption = new Label
       {
         Content = ProcessList.First().ProcessName,
@@ -114,7 +141,7 @@ namespace Slayer
         FontSize = 20,
         FontWeight = FontWeights.Bold
       };
-      ProcessNameBorder.Child = ProcessNameCaption;
+      ProcessNameStackPanel.Children.Add(ProcessNameCaption);
 
       var ButtonBorder = new Border
       {
