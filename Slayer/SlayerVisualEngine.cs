@@ -54,12 +54,33 @@ namespace Slayer
       Window.FontSize = 13;
       Window.Width = 400;
       Window.Height = 470;
-      Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+      Window.WindowStartupLocation = WindowStartupLocation.Manual;
       Window.KeyUp += (object sender, System.Windows.Input.KeyEventArgs Event) =>
       {
         if (Event.Key == System.Windows.Input.Key.Escape)
           Window.Close();
       };
+
+      #region Position window near mouse
+      const int WindowAdjustment = 20;
+      var CursorPosition = System.Windows.Forms.Cursor.Position;
+      var ScreenWorkingArea = System.Windows.Forms.Screen.GetWorkingArea(CursorPosition);
+
+      Window.Left = CursorPosition.X + WindowAdjustment;
+      Window.Top = CursorPosition.Y + WindowAdjustment;
+
+      while (Window.Left + Window.Width > ScreenWorkingArea.Right)
+        Window.Left -= WindowAdjustment;
+
+      while (Window.Top + Window.Height > ScreenWorkingArea.Bottom)
+        Window.Top -= WindowAdjustment;
+
+      while (Window.Left < ScreenWorkingArea.Left)
+        Window.Left += WindowAdjustment;
+
+      while (Window.Top < ScreenWorkingArea.Top)
+        Window.Top += WindowAdjustment;
+      #endregion
 
       MainBorder = new Border
       {
