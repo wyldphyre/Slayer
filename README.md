@@ -10,7 +10,21 @@ I built this to provide a quick way to kill processes that I found myself needin
 The simplest way to set up the application is to pin the .exe file to your taskbar and then run it. The first time Slayer is run it will install a default configuration file which you can modify by opening the jump menu (right-click on the taskbar icon after executing the exe at least once) and selecting **"Edit configuration"**. It is also possible to pass parameters to Slayer.exe. I'll cover that in future documentation.
 
 ### TODO
-* Make the main window appear near the mouse. Having to travel to the center of the screen is annoying on large screens. (might be worth making it an option?)
+
 * Document use of the configuration file
 * Document command line switches
 * Add a small link or similar to the UI that will take you to the github page and/or documentation
+
+## History
+
+### v2.4
+
+* Application now opens as close to the mouse as possible while still being fully visible
+
+### v2.3.5
+
+* Fix to make the UI update when a process is killed and the application remains open
+
+### v2.3.4
+
+* Slayer now closes after clicking the "Kill Others" button
