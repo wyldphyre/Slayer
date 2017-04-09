@@ -89,7 +89,7 @@ namespace Slayer
       MainBorder = new Border
       {
         Padding = new Thickness(4),
-        Background = Theme.ApplicationBackground
+        Background = Theme.Application.Background
       };
       Window.Content = MainBorder;
 
@@ -107,7 +107,7 @@ namespace Slayer
       };
       MainBorder.Child = DockPanel;
 
-      var ProcessNameBorder = new Border { Background = Theme.ApplicationButtonToolbarBackground };
+      var ProcessNameBorder = new Border { Background = Theme.Application.ButtonToolbarBackground };
       DockPanel.Children.Add(ProcessNameBorder);
       DockPanel.SetDock(ProcessNameBorder, Dock.Top);
 
@@ -145,7 +145,7 @@ namespace Slayer
 
       var ButtonBorder = new Border
       {
-        Background = Theme.ApplicationButtonToolbarBackground,
+        Background = Theme.Application.ButtonToolbarBackground,
         Padding = new Thickness(0, 5, 0, 5)
       };
       DockPanel.Children.Add(ButtonBorder);
@@ -192,8 +192,8 @@ namespace Slayer
         var ProcessBorder = new Border
         {
           BorderThickness = new Thickness(1),
-          Background = Theme.ProcessBorderBackground,
-          BorderBrush = Theme.ProcessBorder,
+          Background = Theme.Process.BorderBackground,
+          BorderBrush = Theme.Process.Border,
           Margin = new Thickness(4, 8, 8, 8),
           Padding = new Thickness(2),
           CornerRadius = new CornerRadius(5)
@@ -245,9 +245,9 @@ namespace Slayer
         VerticalAlignment = VerticalAlignment.Bottom,
         Margin = new Thickness(0, 0, 7, 0),
         Padding = new Thickness(5),
-        BorderBrush = Theme.ApplicationButtonBorder,
-        Background = Theme.ApplicationButtonBackground,
-        Foreground = Theme.ApplicationButtonForeground,
+        BorderBrush = Theme.Application.ButtonBorder,
+        Background = Theme.Application.ButtonBackground,
+        Foreground = Theme.Application.ButtonForeground,
         FontSize = 15,
         MinWidth = MinimumButtonWidth
       };
@@ -260,11 +260,11 @@ namespace Slayer
       var Result = new Button
       {
         Content = Caption,
-        Background = Theme.ProcessButtonBackground,
-        BorderBrush = Theme.ProcessButtonBorder,
+        Background = Theme.Process.ButtonBackground,
+        BorderBrush = Theme.Process.ButtonBorder,
         Margin = new Thickness(0, 0, 7, 0),
         Padding = new Thickness(5),
-        Foreground = Theme.ProcessButtonForeground,
+        Foreground = Theme.Process.ButtonForeground,
         FontSize = 15,
         MinWidth = MinimumProcessButtonWidth
       };
@@ -338,7 +338,7 @@ namespace Slayer
         {
           Content = Caption[i],
           FontWeight = FontWeights.Heavy,
-          Foreground = Theme.ProcessCaptionForeground
+          Foreground = Theme.Process.CaptionForeground
         };
         DataStackPanel.Children.Add(CaptionLabel);
 
@@ -347,7 +347,7 @@ namespace Slayer
           Text = Data[i],
           TextTrimming = TextTrimming.CharacterEllipsis,
           TextWrapping = TextWrapping.Wrap,
-          Foreground = Theme.ProcessDataForeground
+          Foreground = Theme.Process.DataForeground
         };
 
         var DataLabel = new Label();

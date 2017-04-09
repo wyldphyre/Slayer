@@ -85,7 +85,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyHelper.cs" />
     <Compile Include="SlayerConfiguration.cs" />
+    <Compile Include="SlayerTheme.cs" />
     <Compile Include="SlayerVisualEngine.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
