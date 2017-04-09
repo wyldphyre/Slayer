@@ -8,7 +8,6 @@ using System.Text;
 using System.Drawing;
 using System.IO;
 using System.Windows.Media.Imaging;
-using System.Windows.Media;
 
 namespace Slayer
 {
@@ -125,7 +124,7 @@ namespace Slayer
           Bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
 
           var IconImage = new System.Windows.Controls.Image();
-          IconImage.Stretch = System.Windows.Media.Stretch.None;// RenderSize.Height = 16;
+          IconImage.Stretch = System.Windows.Media.Stretch.None;
           IconImage.Source = BitmapFrame.Create(stream);
           IconImage.HorizontalAlignment = HorizontalAlignment.Right;
           IconImage.Margin = new Thickness(0, 0, 10, 0);
@@ -239,7 +238,7 @@ namespace Slayer
 
     private Button NewGlobalButton(string Caption, RoutedEventHandler ClickAction)
     {
-      var Result = new Button
+      var GlobalButton = new Button
       {
         Content = Caption,
         VerticalAlignment = VerticalAlignment.Bottom,
@@ -251,13 +250,13 @@ namespace Slayer
         FontSize = 15,
         MinWidth = MinimumButtonWidth
       };
-      Result.Click += ClickAction;
+      GlobalButton.Click += ClickAction;
 
-      return Result;
+      return GlobalButton;
     }
     private Button NewProcessButton(string Caption, RoutedEventHandler ClickAction)
     {
-      var Result = new Button
+      var ProcessButton = new Button
       {
         Content = Caption,
         Background = Theme.Process.ButtonBackground,
@@ -268,50 +267,50 @@ namespace Slayer
         FontSize = 15,
         MinWidth = MinimumProcessButtonWidth
       };
-      Result.Click += ClickAction;
+      ProcessButton.Click += ClickAction;
 
-      return Result;
+      return ProcessButton;
     }
     private static string TimeSpanAsWords(TimeSpan TimeSpan)
     {
-      var Result = new StringBuilder("");
+      var Builder = new StringBuilder("");
 
       if (TimeSpan.Days > 0)
-        Result.AppendFormat("{0} days", TimeSpan.Days);
+        Builder.AppendFormat("{0} days", TimeSpan.Days);
 
       if (TimeSpan.Hours > 0)
       {
-        if (Result.Length != 0)
-          Result.Append(", ");
+        if (Builder.Length != 0)
+          Builder.Append(", ");
 
-        Result.AppendFormat("{0} hours", TimeSpan.Hours);
+        Builder.AppendFormat("{0} hours", TimeSpan.Hours);
       }
 
       if (TimeSpan.Minutes > 0)
       {
-        if (Result.Length != 0)
-          Result.Append(", ");
+        if (Builder.Length != 0)
+          Builder.Append(", ");
 
-        Result.AppendFormat("{0} minutes", TimeSpan.Minutes);
+        Builder.AppendFormat("{0} minutes", TimeSpan.Minutes);
       }
 
       if (TimeSpan.Seconds > 0)
       {
-        if (Result.Length != 0)
-          Result.Append(", ");
+        if (Builder.Length != 0)
+          Builder.Append(", ");
 
-        Result.AppendFormat("{0} seconds", TimeSpan.Seconds);
+        Builder.AppendFormat("{0} seconds", TimeSpan.Seconds);
       }
 
       if (TimeSpan.Milliseconds > 0)
       {
-        if (Result.Length != 0)
-          Result.Append(", ");
+        if (Builder.Length != 0)
+          Builder.Append(", ");
 
-        Result.AppendFormat("{0} milliseconds", TimeSpan.Milliseconds);
+        Builder.AppendFormat("{0} milliseconds", TimeSpan.Milliseconds);
       }
 
-      return Result.ToString();
+      return Builder.ToString();
     }
     private void ProduceProcessDataRow(StackPanel Parent, string Caption, string Data)
     {

@@ -19,6 +19,9 @@ namespace Slayer
     private readonly string ApplicationFilePath;
     private readonly string ConfigurationFilePath;
 
+    private const string DefaultConfigurationFileName = "Slayer.exe.Config";
+    const string v1ConfigurationFileName = "Slayer_v1.exe.Config";
+    const string v2ConfigurationFileName = "Slayer_v2.exe.Config";
     private bool AlwaysPreview;
 
     public string ProcessName { get; private set; }
@@ -29,55 +32,15 @@ namespace Slayer
       this.Arguments = new List<string>();
       this.Application = new Application();
 
-      var Assembly = System.Reflection.Assembly.GetExecutingAssembly();
-      const string DefaultConfigurationFileName = "Slayer.exe.Config";
-      const string v1ConfigurationFileName = "Slayer_v1.exe.Config";
-      const string v2ConfigurationFileName = "Slayer_v2.exe.Config";
       var UserDataFolder = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
       var ApplicationDataFolder = Path.Combine(UserDataFolder, nameof(Slayer));
       this.ConfigurationFilePath = Path.Combine(ApplicationDataFolder, DefaultConfigurationFileName);
 
-      if (!File.Exists(ConfigurationFilePath))
-      {
-        if (!Directory.Exists(ApplicationDataFolder))
-          Directory.CreateDirectory(ApplicationDataFolder);
+      var Assembly = System.Reflection.Assembly.GetExecutingAssembly();
 
-        using (var StreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
-        using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
-        {
-          FileWriter.Write(StreamReader.ReadToEnd());
-          FileWriter.Flush();
-        }
-      } else
-      {
-        var ReplaceConfigFile = false;
+      PrepareConfiguration(ApplicationDataFolder, Assembly);
 
-        using (var v1ConfigStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + v1ConfigurationFileName)))
-        using (var v2ConfigStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + v2ConfigurationFileName)))
-        using (var LocalConfigStreamReader = new StreamReader(ConfigurationFilePath))
-        {
-          var Sha1 = new SHA1CryptoServiceProvider();
-          var v1Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v1ConfigStreamReader.ReadToEnd())));
-          var v2Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v2ConfigStreamReader.ReadToEnd())));
-          var LocalHash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(LocalConfigStreamReader.ReadToEnd())));
-          
-          ReplaceConfigFile = LocalHash == v1Hash;
-        }
-
-        if (ReplaceConfigFile)
-        {
-          File.Delete(ConfigurationFilePath);
-
-          using (var CurrentStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
-          using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
-          {
-            FileWriter.Write(CurrentStreamReader.ReadToEnd());
-            FileWriter.Flush();
-          }
-        }
-      }
-
-      this.ApplicationFilePath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+      this.ApplicationFilePath = Assembly.GetName().CodeBase;
       var ConfigurationMap = new ExeConfigurationFileMap
       {
         ExeConfigFilename = ConfigurationFilePath
@@ -99,6 +62,7 @@ namespace Slayer
             MessageBox.Show($"Incorrect switch {argument}. Use '-' or '/' instead of '\\'.");
             return;
           }
+
           if (argument.StartsWith("-") || argument.StartsWith("/"))
           {
             // arguments with a switch indicator character at the front are assumed to be switches
@@ -151,9 +115,10 @@ namespace Slayer
       Debug.Assert(ProcessName != String.Empty, $"{nameof(ProcessName)} cannot be an empty string");
 
       var sanitisedProcessName = ProcessName;
+      const string ExecutableExtension = ".exe";
 
-      if (sanitisedProcessName.EndsWith(".exe"))
-        sanitisedProcessName = sanitisedProcessName.Remove(sanitisedProcessName.Length - ".exe".Length);
+      if (sanitisedProcessName.EndsWith(ExecutableExtension))
+        sanitisedProcessName = sanitisedProcessName.Remove(sanitisedProcessName.Length - ExecutableExtension.Length);
 
       // TODO: Should the app also handle the user passing in a path instead of 'friendly' process name?
 
@@ -230,13 +195,58 @@ namespace Slayer
       }
     }
 
+    private void PrepareConfiguration(string ApplicationDataFolder, System.Reflection.Assembly Assembly)
+    {
+      if (!File.Exists(ConfigurationFilePath))
+      {
+        if (!Directory.Exists(ApplicationDataFolder))
+          Directory.CreateDirectory(ApplicationDataFolder);
+
+        using (var StreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
+        using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
+        {
+          FileWriter.Write(StreamReader.ReadToEnd());
+          FileWriter.Flush();
+        }
+      }
+      else
+      {
+        var ReplaceConfigFile = false;
+
+        using (var v1ConfigStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + v1ConfigurationFileName)))
+        using (var v2ConfigStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + v2ConfigurationFileName)))
+        using (var LocalConfigStreamReader = new StreamReader(ConfigurationFilePath))
+        {
+          var Sha1 = new SHA1CryptoServiceProvider();
+          var v1Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v1ConfigStreamReader.ReadToEnd())));
+          var v2Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v2ConfigStreamReader.ReadToEnd())));
+          var LocalHash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(LocalConfigStreamReader.ReadToEnd())));
+
+          ReplaceConfigFile = LocalHash == v1Hash;
+        }
+
+        if (ReplaceConfigFile)
+        {
+          File.Delete(ConfigurationFilePath);
+
+          using (var CurrentStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
+          using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
+          {
+            FileWriter.Write(CurrentStreamReader.ReadToEnd());
+            FileWriter.Flush();
+          }
+        }
+      }
+    }
+
     private void ConfigureJumpList()
     {
       var JumpList = new JumpList();
+      const string ConfigurationCategoryName = "Configuration";
 
       JumpList.JumpItems.Add(new JumpTask
       {
-        CustomCategory = "Configuration",
+        CustomCategory = ConfigurationCategoryName,
         Title = "Edit configuration",
         ApplicationPath = ConfigurationFilePath,
         IconResourcePath = NativeMethodHelper.AssociatedApplicationPathForExtension(NativeMethods.AssocStr.Executable, Path.GetExtension(ConfigurationFilePath))
@@ -244,7 +254,7 @@ namespace Slayer
 
       JumpList.JumpItems.Add(new JumpTask
       {
-        CustomCategory = "Configuration",
+        CustomCategory = ConfigurationCategoryName,
         Title = "Open configuration location",
         ApplicationPath = "explorer.exe",
         Arguments = $"/select,\"{ConfigurationFilePath}\"",
