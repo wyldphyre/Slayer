@@ -115,7 +115,20 @@ namespace Slayer
       ProcessNameStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
       ProcessNameBorder.Child = ProcessNameStackPanel;
 
-      var AssociatedIcon = Icon.ExtractAssociatedIcon(ProcessList.First().MainModule.FileName);
+      Icon AssociatedIcon = null;
+      foreach (var Process in ProcessList)
+      { 
+        try
+        {
+          AssociatedIcon = Icon.ExtractAssociatedIcon(Process.MainModule.FileName);
+          break;
+        }
+        catch
+        {
+          AssociatedIcon = null;
+        }
+      }
+
       if (AssociatedIcon != null)
       {
         using (var Bitmap = AssociatedIcon.ToBitmap())
