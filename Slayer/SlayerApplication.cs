@@ -244,12 +244,25 @@ namespace Slayer
       var JumpList = new JumpList();
       const string ConfigurationCategoryName = "Configuration";
 
+      var ConfigAssociatedApplicationPath = "";
+      var ConfigHasAssociation = true;
+      try
+      {
+        ConfigAssociatedApplicationPath = NativeMethodHelper.AssociatedApplicationPathForExtension(NativeMethods.AssocStr.Executable, Path.GetExtension(ConfigurationFilePath));
+      }
+      catch (InvalidOperationException)
+      {
+        ConfigHasAssociation = false;
+        ConfigAssociatedApplicationPath = NativeMethodHelper.AssociatedApplicationPathForExtension(NativeMethods.AssocStr.Executable, ".txt");
+      }
+
       JumpList.JumpItems.Add(new JumpTask
       {
         CustomCategory = ConfigurationCategoryName,
         Title = "Edit configuration",
-        ApplicationPath = ConfigurationFilePath,
-        IconResourcePath = NativeMethodHelper.AssociatedApplicationPathForExtension(NativeMethods.AssocStr.Executable, Path.GetExtension(ConfigurationFilePath))
+        ApplicationPath = ConfigAssociatedApplicationPath,
+        IconResourcePath = ConfigAssociatedApplicationPath,
+        Arguments = ConfigHasAssociation ? "" : ConfigurationFilePath,
       });
 
       JumpList.JumpItems.Add(new JumpTask
