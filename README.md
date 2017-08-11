@@ -17,6 +17,18 @@ The simplest way to set up the application is to pin the .exe file to your taskb
 
 ## History
 
+### v2.4.3
+
+* Now handles the scenario where the computer doesn't have an application associated with the `.config` extension. Jump menu now correctly created/updated when this situation is encountered.
+
+### v2.4.2
+
+* Would fail to show to show UI when trying to get the image for a process a process running as administrator. Will now try to get the image from another process, falling back to no image if all processes are running with administrator privileges.
+
+### v2.4.1
+
+* Shows the icon of the process at the top of the process list.
+
 ### v2.4
 
 * Application now opens as close to the mouse as possible while still being fully visible
