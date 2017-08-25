@@ -81,14 +81,15 @@ namespace Slayer
         ApplicationTheme: new ApplicationTheme(
           ProcessNameHeaderBackground: Brushes.DarkGray,
           Background: Brushes.White,
-          ButtonBorder: Brushes.DarkGray,
+          ButtonBorder: Brushes.DimGray,
           ButtonToolbarBackground: Brushes.Transparent,
           ButtonBackground: Brushes.WhiteSmoke,
           ButtonForeground: Brushes.OrangeRed),
+
         ProcessTheme: new ProcessTheme(
           HeadingForeground: Brushes.Black,
           BorderBackground: Brushes.WhiteSmoke,
-          Border: Brushes.DarkGray,
+          Border: Brushes.DimGray,
           ButtonBorder: Brushes.Transparent,
           ButtonBackground: Brushes.Transparent,
           ButtonForeground: Brushes.OrangeRed,
