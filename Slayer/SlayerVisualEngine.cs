@@ -110,9 +110,11 @@ namespace Slayer
       DockPanel.Children.Add(ProcessNameBorder);
       DockPanel.SetDock(ProcessNameBorder, Dock.Top);
 
-      var ProcessNameStackPanel = new StackPanel();
-      ProcessNameStackPanel.Orientation = Orientation.Horizontal;
-      ProcessNameStackPanel.HorizontalAlignment = HorizontalAlignment.Center;
+      var ProcessNameStackPanel = new StackPanel
+      {
+        Orientation = Orientation.Horizontal,
+        HorizontalAlignment = HorizontalAlignment.Center
+      };
       ProcessNameBorder.Child = ProcessNameStackPanel;
 
       Icon AssociatedIcon = null;
@@ -136,11 +138,13 @@ namespace Slayer
           var stream = new MemoryStream();
           Bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
 
-          var IconImage = new System.Windows.Controls.Image();
-          IconImage.Stretch = System.Windows.Media.Stretch.None;
-          IconImage.Source = BitmapFrame.Create(stream);
-          IconImage.HorizontalAlignment = HorizontalAlignment.Right;
-          IconImage.Margin = new Thickness(0, 0, 10, 0);
+          var IconImage = new System.Windows.Controls.Image
+          {
+            Stretch = System.Windows.Media.Stretch.None,
+            Source = BitmapFrame.Create(stream),
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(0, 0, 10, 0)
+          };
 
           ProcessNameStackPanel.Children.Add(IconImage);
         }
