@@ -148,6 +148,7 @@ namespace Slayer
             ProcessList = new List<Process>(ProcessesArray),
             Application = Application
           };
+
           VisualEngine.Install(MainWindow);
           VisualEngine.KillAllEvent += () =>
           {
