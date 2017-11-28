@@ -245,11 +245,13 @@ namespace Slayer
           ComposeProcesses();
         }));
 
-        ButtonStackPanel.Children.Add(NewProcessButton("Kill Others", (Sender, Event) =>
+        var KillOthersButton = NewProcessButton("Kill Others", (Sender, Event) =>
         {
           ProcessKillOthersEvent?.Invoke(Process);
           ComposeProcesses();
-        }));
+        });
+        KillOthersButton.IsEnabled = ProcessList.Count > 1;
+        ButtonStackPanel.Children.Add(KillOthersButton);
       }
     }
 

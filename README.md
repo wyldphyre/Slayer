@@ -16,6 +16,10 @@ The simplest way to set up the application is to pin the .exe file to your taskb
 
 ## History
 
+### 2.4.4 - 2017-11-28
+
+* Disable the `Kill Others` button when only a single instance of the process is running.
+
 ### 2.4.3 - 2017-08-10
 
 #### Fixed
