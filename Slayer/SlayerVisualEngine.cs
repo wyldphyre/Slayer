@@ -8,6 +8,7 @@ using System.Text;
 using System.Drawing;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace Slayer
 {
@@ -65,24 +66,34 @@ namespace Slayer
       };
 
       #region Position window near mouse
-      const int WindowAdjustment = 20;
-      var CursorPosition = System.Windows.Forms.Cursor.Position;
-      var ScreenWorkingArea = System.Windows.Forms.Screen.GetWorkingArea(CursorPosition);
+      Window.Loaded += (sender, args) => 
+      {
+        //var source = PresentationSource.FromVisual(Window);
+        var scaleX = 1.0;
 
-      Window.Left = CursorPosition.X + WindowAdjustment;
-      Window.Top = CursorPosition.Y + WindowAdjustment;
+        //if (source != null)
+        //  scaleX = source.CompositionTarget.TransformFromDevice.M11;
+      
+        const int WindowAdjustment = 20;
+        var CursorPosition = System.Windows.Forms.Cursor.Position;
+        var ScreenWorkingArea = System.Windows.Forms.Screen.GetWorkingArea(CursorPosition);
 
-      while (Window.Left + Window.Width > ScreenWorkingArea.Right)
-        Window.Left -= WindowAdjustment;
+        Window.Left = CursorPosition.X * scaleX + WindowAdjustment;
+        Window.Top = CursorPosition.Y * scaleX + WindowAdjustment;
 
-      while (Window.Top + Window.Height > ScreenWorkingArea.Bottom)
-        Window.Top -= WindowAdjustment;
+        while (Window.Left + Window.Width > ScreenWorkingArea.Right)
+          Window.Left -= WindowAdjustment;
 
-      while (Window.Left < ScreenWorkingArea.Left)
-        Window.Left += WindowAdjustment;
+        while (Window.Top + Window.Height > ScreenWorkingArea.Bottom)
+          Window.Top -= WindowAdjustment;
 
-      while (Window.Top < ScreenWorkingArea.Top)
-        Window.Top += WindowAdjustment;
+        while (Window.Left < ScreenWorkingArea.Left)
+          Window.Left += WindowAdjustment;
+
+        while (Window.Top < ScreenWorkingArea.Top)
+          Window.Top += WindowAdjustment;
+
+      };
       #endregion
 
       MainBorder = new Border
