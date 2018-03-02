@@ -79,7 +79,7 @@ namespace Slayer
       return new Theme
       (
         ApplicationTheme: new ApplicationTheme(
-          ProcessNameHeaderBackground: Brushes.DarkGray,
+          ProcessNameHeaderBackground: Brushes.White,
           Background: Brushes.White,
           ButtonBorder: Brushes.DimGray,
           ButtonToolbarBackground: Brushes.Transparent,

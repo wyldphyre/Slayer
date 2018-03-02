@@ -117,7 +117,7 @@ namespace Slayer
       };
       MainBorder.Child = DockPanel;
 
-      var ProcessNameBorder = new Border { Background = Theme.Application.ButtonToolbarBackground };
+      var ProcessNameBorder = new Border { Background = Theme.Application.ProcessNameHeaderBackground };
       DockPanel.Children.Add(ProcessNameBorder);
       DockPanel.SetDock(ProcessNameBorder, Dock.Top);
 
