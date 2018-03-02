@@ -304,17 +304,17 @@ namespace Slayer
     private static string TimeSpanAsWords(TimeSpan TimeSpan)
     {
       var Builder = new StringBuilder("");
-      var HasLargeValue = false;
+      var OverAMinute = false;
 
       if (TimeSpan.Days > 0)
       {
-        HasLargeValue = true;
+        OverAMinute = true;
         Builder.AppendFormat("{0} days", TimeSpan.Days);
       }
 
       if (TimeSpan.Hours > 0)
       {
-        HasLargeValue = true;
+        OverAMinute = true;
 
         if (Builder.Length != 0)
           Builder.Append(", ");
@@ -324,7 +324,7 @@ namespace Slayer
 
       if (TimeSpan.Minutes > 0)
       {
-        HasLargeValue = true;
+        OverAMinute = true;
 
         if (Builder.Length != 0)
           Builder.Append(", ");
@@ -340,7 +340,7 @@ namespace Slayer
         Builder.AppendFormat("{0} seconds", TimeSpan.Seconds);
       }
 
-      if (!HasLargeValue && TimeSpan.Milliseconds > 0)
+      if (!OverAMinute && TimeSpan.Milliseconds > 0)
       {
         if (Builder.Length != 0)
           Builder.Append(", ");
