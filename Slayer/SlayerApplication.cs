@@ -183,8 +183,8 @@ namespace Slayer
           };
           VisualEngine.ProcessKillOthersEvent += (Context) =>
           {
-            foreach (Process KillableProcess in VisualEngine.ProcessList.Where(searchprocess => searchprocess != Context))
-              KillableProcess.Kill();
+            foreach (var killableProcess in VisualEngine.ProcessList.Where(searchprocess => searchprocess != Context))
+              killableProcess.Kill();
 
             Application.Shutdown();
           };
@@ -198,19 +198,7 @@ namespace Slayer
 
     private void PrepareConfiguration(string ApplicationDataFolder, System.Reflection.Assembly Assembly)
     {
-      if (!File.Exists(ConfigurationFilePath))
-      {
-        if (!Directory.Exists(ApplicationDataFolder))
-          Directory.CreateDirectory(ApplicationDataFolder);
-
-        using (var StreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
-        using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
-        {
-          FileWriter.Write(StreamReader.ReadToEnd());
-          FileWriter.Flush();
-        }
-      }
-      else
+      if (File.Exists(ConfigurationFilePath))
       {
         var ReplaceConfigFile = false;
 
@@ -236,6 +224,18 @@ namespace Slayer
             FileWriter.Write(CurrentStreamReader.ReadToEnd());
             FileWriter.Flush();
           }
+        }
+      }
+      else
+      {
+        if (!Directory.Exists(ApplicationDataFolder))
+          Directory.CreateDirectory(ApplicationDataFolder);
+
+        using (var StreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + DefaultConfigurationFileName)))
+        using (var FileWriter = new StreamWriter(ConfigurationFilePath, false))
+        {
+          FileWriter.Write(StreamReader.ReadToEnd());
+          FileWriter.Flush();
         }
       }
     }
