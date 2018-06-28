@@ -181,6 +181,17 @@ namespace Slayer
             if (VisualEngine.ProcessList.Count < 1)
               Application.Shutdown();
           };
+          VisualEngine.ProcessRestartEvent += (Context) =>
+          {
+            var filename = Context.MainModule.FileName;
+            var arguments = Context.StartInfo.Arguments;
+
+            Context.Kill();
+            Context.WaitForExit();
+
+            Process.Start(filename, arguments);
+            Application.Shutdown();
+          };
           VisualEngine.ProcessKillOthersEvent += (Context) =>
           {
             foreach (var killableProcess in VisualEngine.ProcessList.Where(searchprocess => searchprocess != Context))

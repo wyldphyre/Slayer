@@ -10,12 +10,15 @@ The simplest way to set up the application is to pin the .exe file to your taskb
 
 ### TODO
 
-- Add a `restart` button combine killing and restarting of a process
 - Document use of the configuration file
 - Document command line switches
 - Add a small link or similar to the UI that will take you to the github page and/or documentation
 
 ## History
+
+### 2.5 - 2017-06-28
+
+- Added a `Restart` button to combine killing and restarting a process.
 
 ### 2.4.4 - 2017-11-28
 

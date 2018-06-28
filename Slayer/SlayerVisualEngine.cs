@@ -23,6 +23,7 @@ namespace Slayer
     event Action<Process> ProcessShowMeEvent;
     event Action<Process> ProcessKillMeEvent;
     event Action<Process> ProcessKillOthersEvent;
+    event Action<Process> ProcessRestartEvent;
     void RemoveProcess(Process Process);
     void Install(Window Window);
   }
@@ -45,6 +46,7 @@ namespace Slayer
     public event Action<Process> ProcessShowMeEvent;
     public event Action<Process> ProcessKillMeEvent;
     public event Action<Process> ProcessKillOthersEvent;
+    public event Action<Process> ProcessRestartEvent;
 
     public SlayerVisualEngine()
     {
@@ -254,6 +256,11 @@ namespace Slayer
         {
           ProcessKillMeEvent?.Invoke(Process);
           ComposeProcesses();
+        }));
+
+        ButtonStackPanel.Children.Add(NewProcessButton("Restart", (Sender, Event) =>
+        {
+          ProcessRestartEvent?.Invoke(Process);
         }));
 
         var KillOthersButton = NewProcessButton("Kill Others", (Sender, Event) =>
