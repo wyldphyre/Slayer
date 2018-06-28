@@ -10,64 +10,65 @@ The simplest way to set up the application is to pin the .exe file to your taskb
 
 ### TODO
 
-* Document use of the configuration file
-* Document command line switches
-* Add a small link or similar to the UI that will take you to the github page and/or documentation
+- Add a `restart` button combine killing and restarting of a process
+- Document use of the configuration file
+- Document command line switches
+- Add a small link or similar to the UI that will take you to the github page and/or documentation
 
 ## History
 
 ### 2.4.4 - 2017-11-28
 
-* Disable the `Kill Others` button when only a single instance of the process is running.
+- Disable the `Kill Others` button when only a single instance of the process is running.
 
 ### 2.4.3 - 2017-08-10
 
 #### Fixed
 
-* Now handles the scenario where the computer doesn't have an application associated with the `.config` extension. Jump menu now correctly created/updated when this situation is encountered.
+- Now handles the scenario where the computer doesn't have an application associated with the `.config` extension. Jump menu now correctly created/updated when this situation is encountered.
 
 ### 2.4.2 - 2017-06-21
 
 #### Fixed
 
-* Would fail to show to show UI when trying to get the image for a process a process running as administrator. Will now try to get the image from another process, falling back to no image if all processes are running with administrator privileges.
+- Would fail to show to show UI when trying to get the image for a process a process running as administrator. Will now try to get the image from another process, falling back to no image if all processes are running with administrator privileges.
 
 ### 2.4.1 - 2016-11-20
 
 #### Added
 
-* Shows the icon of the process at the top of the process list.
+- Shows the icon of the process at the top of the process list.
 
 ### 2.4 - 2016-11-20
 
 #### Added
 
-* Application now opens as close to the mouse as possible while still being fully visible
+- Application now opens as close to the mouse as possible while still being fully visible
 
 ### 2.3.5 - 2016-01-28
 
 #### Fixed
 
-* Fix to make the UI update when a process is killed and the application remains open
+- Fix to make the UI update when a process is killed and the application remains open
 
 ### 2.3.4 - 2016-01-21
 
 #### Changed
 
-* Slayer now closes after clicking the "Kill Others" button
+- Slayer now closes after clicking the "Kill Others" button
 
 ### 2.3.3 - 2015-12-02
 
-* Internal code clean up. No functional changes.
+- Internal code clean up. No functional changes.
 
 ### 2.3.1 - 2015-06-01
 
 #### Changed
 
-* Now only show a single header at the top of the app, instead of a header per process.
+- Now only show a single header at the top of the app, instead of a header per process.
 
 ### 2.3 - 2015-02-08
 
 #### Removed
 
-* Configurable colour themes
+- Configurable colour themes
