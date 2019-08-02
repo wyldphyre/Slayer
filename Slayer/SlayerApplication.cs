@@ -21,7 +21,7 @@ namespace Slayer
 
     private const string DefaultConfigurationFileName = "Slayer.exe.Config";
     const string v1ConfigurationFileName = "Slayer_v1.exe.Config";
-    const string v2ConfigurationFileName = "Slayer_v2.exe.Config";
+    //const string v2ConfigurationFileName = "Slayer_v2.exe.Config";
     private bool AlwaysPreview;
 
     public string ProcessName { get; private set; }
@@ -45,6 +45,7 @@ namespace Slayer
       {
         ExeConfigFilename = ConfigurationFilePath
       };
+      // TODO: put something here to alert the user to a problem with the configuration file. For example, having a comma between attributes in the XML is not valid and will raise an exception, but the app will currently fail silently.
       this.Configuration = ConfigurationManager.OpenMappedExeConfiguration(ConfigurationMap, ConfigurationUserLevel.None);
       this.SlayableSection = (SlayableConfigurationSection)Configuration.GetSection("slayableSection");
     }
@@ -217,12 +218,14 @@ namespace Slayer
         //using (var v2ConfigStreamReader = new StreamReader(Assembly.GetManifestResourceStream(Assembly.GetName().Name + "." + v2ConfigurationFileName)))
         using (var LocalConfigStreamReader = new StreamReader(ConfigurationFilePath))
         {
-          var Sha1 = new SHA1CryptoServiceProvider();
-          var v1Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v1ConfigStreamReader.ReadToEnd())));
-          //var v2Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v2ConfigStreamReader.ReadToEnd())));
-          var LocalHash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(LocalConfigStreamReader.ReadToEnd())));
+          using (var Sha1 = new SHA1CryptoServiceProvider())
+          {
+            var v1Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v1ConfigStreamReader.ReadToEnd())));
+            //var v2Hash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(v2ConfigStreamReader.ReadToEnd())));
+            var LocalHash = BitConverter.ToString(Sha1.ComputeHash(Encoding.UTF8.GetBytes(LocalConfigStreamReader.ReadToEnd())));
 
-          ReplaceConfigFile = LocalHash == v1Hash;
+            ReplaceConfigFile = LocalHash == v1Hash;
+          }
         }
 
         if (ReplaceConfigFile)
@@ -256,7 +259,7 @@ namespace Slayer
       var JumpList = new JumpList();
       const string ConfigurationCategoryName = "Configuration";
 
-      var ConfigAssociatedApplicationPath = "";
+      string ConfigAssociatedApplicationPath;
       var ConfigHasAssociation = true;
       try
       {
